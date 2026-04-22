@@ -1,0 +1,2330 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>범어고 외부지문 분석 | 에듀케레 영수학원</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&family=EB+Garamond:wght@400;500;600;700&family=Playfair+Display:wght@400;700;900&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --navy:#1a2744;
+  --navy-light:#2a3a5c;
+  --gold:#c8a84b;
+  --gold-light:#e0c77a;
+  --bg:#f5f3ee;
+  --white:#fff;
+  --gray:#6b7280;
+  --light-gray:#e5e7eb;
+  --success:#059669;
+  --danger:#dc2626;
+}
+body{
+  font-family:'Noto Sans KR',sans-serif;
+  background:var(--bg);
+  color:#1f2937;
+  line-height:1.7;
+  min-height:100vh;
+}
+.app{display:flex;min-height:100vh}
+
+/* ===== Sidebar ===== */
+.sidebar{
+  width:280px;
+  background:var(--navy);
+  color:#fff;
+  padding:30px 0;
+  position:fixed;
+  top:0;left:0;bottom:0;
+  overflow-y:auto;
+  box-shadow:2px 0 20px rgba(0,0,0,0.1);
+  z-index:100;
+}
+.brand{
+  padding:0 25px 25px;
+  border-bottom:1px solid rgba(255,255,255,0.1);
+  margin-bottom:20px;
+}
+.brand-title{
+  font-family:'Playfair Display',serif;
+  font-size:22px;
+  font-weight:900;
+  color:var(--gold);
+  margin-bottom:4px;
+}
+.brand-sub{
+  font-size:12px;
+  color:rgba(255,255,255,0.7);
+  letter-spacing:0.5px;
+}
+.series-title{
+  padding:0 25px 15px;
+  font-size:13px;
+  font-weight:700;
+  color:var(--gold-light);
+  letter-spacing:1px;
+}
+.passage-list{list-style:none}
+.passage-item{
+  padding:14px 25px;
+  cursor:pointer;
+  border-left:3px solid transparent;
+  transition:all 0.2s;
+  font-size:14px;
+  display:flex;
+  align-items:center;
+  gap:12px;
+}
+.passage-item:hover{background:rgba(255,255,255,0.05);border-left-color:var(--gold-light)}
+.passage-item.active{
+  background:rgba(200,168,75,0.15);
+  border-left-color:var(--gold);
+  color:var(--gold-light);
+  font-weight:500;
+}
+.passage-num{
+  display:inline-block;
+  width:28px;
+  height:28px;
+  line-height:28px;
+  text-align:center;
+  background:rgba(255,255,255,0.1);
+  border-radius:50%;
+  font-weight:700;
+  font-size:13px;
+  flex-shrink:0;
+}
+.passage-item.active .passage-num{background:var(--gold);color:var(--navy)}
+
+.mobile-toggle{
+  display:none;
+  position:fixed;
+  top:15px;left:15px;
+  z-index:200;
+  background:var(--navy);
+  color:var(--gold);
+  border:none;
+  padding:10px 14px;
+  border-radius:8px;
+  font-size:20px;
+  cursor:pointer;
+  box-shadow:0 2px 8px rgba(0,0,0,0.2);
+}
+
+/* ===== Main ===== */
+.main{
+  margin-left:280px;
+  flex:1;
+  padding:30px 40px 60px;
+}
+.passage{display:none}
+.passage.active{display:block}
+
+.passage-header{
+  background:var(--navy);
+  color:#fff;
+  padding:30px 35px;
+  border-radius:12px;
+  margin-bottom:25px;
+  box-shadow:0 4px 20px rgba(26,39,68,0.15);
+  position:relative;
+  overflow:hidden;
+}
+.passage-header::before{
+  content:'';
+  position:absolute;
+  top:0;right:0;
+  width:150px;height:100%;
+  background:linear-gradient(135deg,transparent 50%,rgba(200,168,75,0.15) 100%);
+}
+.passage-title{
+  font-family:'Playfair Display',serif;
+  font-size:28px;
+  font-weight:700;
+  margin-bottom:6px;
+  color:var(--gold-light);
+}
+.passage-subtitle{
+  font-size:14px;
+  color:rgba(255,255,255,0.8);
+  letter-spacing:0.5px;
+}
+
+/* ===== Tabs ===== */
+.tabs{
+  display:flex;
+  gap:4px;
+  margin-bottom:0;
+  border-bottom:2px solid var(--navy);
+  flex-wrap:wrap;
+}
+.tab-btn{
+  padding:12px 20px;
+  background:#fff;
+  border:1px solid var(--light-gray);
+  border-bottom:none;
+  cursor:pointer;
+  font-family:'Noto Sans KR',sans-serif;
+  font-size:14px;
+  font-weight:500;
+  color:var(--gray);
+  border-radius:8px 8px 0 0;
+  transition:all 0.2s;
+}
+.tab-btn:hover{color:var(--navy);background:#fafaf7}
+.tab-btn.active{
+  background:var(--navy);
+  color:var(--gold-light);
+  font-weight:700;
+  border-color:var(--navy);
+}
+
+.tab-content{display:none;background:#fff;padding:35px;border-radius:0 0 12px 12px;box-shadow:0 2px 12px rgba(0,0,0,0.05);min-height:400px}
+.tab-content.active{display:block}
+
+/* ===== 전문 ===== */
+.full-passage{
+  font-family:'EB Garamond',serif;
+  font-size:17px;
+  line-height:2;
+  color:#1f2937;
+  background:#fafaf7;
+  padding:30px 35px;
+  border:1px solid #e0d9c4;
+  border-left:5px solid var(--navy);
+  border-radius:6px;
+  white-space:pre-wrap;
+}
+.full-passage .sent-num{
+  display:inline-block;
+  color:var(--navy);
+  font-weight:700;
+  margin-right:3px;
+}
+.source-note{
+  margin-top:15px;
+  font-size:13px;
+  color:var(--gray);
+  font-style:italic;
+  text-align:right;
+}
+
+/* ===== 문장분석 ===== */
+.sent-block{margin-bottom:30px;padding-bottom:25px;border-bottom:1px dashed #ddd}
+.sent-block:last-child{border-bottom:none}
+.sent-number-badge{
+  display:inline-block;
+  background:var(--navy);
+  color:var(--gold-light);
+  width:32px;height:32px;line-height:32px;
+  text-align:center;border-radius:50%;
+  font-weight:700;font-size:15px;
+  margin-bottom:12px;
+  font-family:'Playfair Display',serif;
+}
+.sent-eng{
+  font-family:'EB Garamond',serif;
+  font-size:17px;
+  line-height:1.8;
+  padding:16px 22px;
+  background:#fff;
+  border:1px solid #d1d5db;
+  border-left:4px solid #2E75B6;
+  border-radius:4px;
+  margin-bottom:14px;
+  color:#1f2937;
+}
+.sent-slash{
+  padding:14px 18px;
+  background:#f0f4f8;
+  border-radius:6px;
+  margin-bottom:10px;
+  font-size:14.5px;
+  line-height:1.9;
+}
+.slash-en{color:#1f4e79;font-family:'EB Garamond',serif;font-size:15.5px}
+.slash-ko{color:#444;display:block;margin-top:6px;font-size:14px}
+.grammar-list{margin-top:10px;padding-left:0;list-style:none}
+.grammar-item{
+  background:#FFF8E1;
+  border-left:3px solid #c8a84b;
+  padding:10px 15px;
+  margin-bottom:8px;
+  border-radius:4px;
+  font-size:14px;
+  color:#7F6000;
+}
+.grammar-item .g-title{font-weight:700;color:#5d4a00;margin-right:5px}
+.grammar-item .g-example{color:#8b6f00;font-style:italic;margin:0 3px}
+.grammar-item .g-point{color:#704600;font-weight:500}
+
+/* ===== 핵심단어 ===== */
+.vocab-list{list-style:none}
+.vocab-item{
+  display:grid;
+  grid-template-columns:1.5fr 2fr 0.6fr 1.5fr;
+  gap:15px;
+  padding:14px 18px;
+  margin-bottom:8px;
+  background:#E2EFDA;
+  border-left:4px solid #375623;
+  border-radius:4px;
+  align-items:center;
+  font-size:14.5px;
+}
+.vocab-word{
+  font-family:'EB Garamond',serif;
+  font-weight:700;
+  font-size:17px;
+  color:#1a4820;
+}
+.vocab-meaning{color:#2d4a1f;font-weight:500}
+.vocab-pos{
+  color:#57733a;
+  font-style:italic;
+  text-align:center;
+  font-size:13px;
+}
+.vocab-deriv{color:#4a6b2f;font-size:13px}
+
+/* ===== 전문해석 ===== */
+.translation{
+  font-size:15.5px;
+  line-height:2;
+  color:#1f2937;
+  padding:28px 32px;
+  background:#fafaf7;
+  border:1px solid #e0d9c4;
+  border-radius:8px;
+}
+
+/* ===== 주제·요지 ===== */
+.topic-section{margin-bottom:22px}
+.topic-label{
+  display:inline-block;
+  background:var(--navy);
+  color:var(--gold-light);
+  padding:5px 14px;
+  border-radius:20px;
+  font-size:13px;
+  font-weight:700;
+  margin-bottom:10px;
+  letter-spacing:0.5px;
+}
+.topic-content{
+  padding:16px 22px;
+  background:#fafaf7;
+  border-left:4px solid var(--gold);
+  border-radius:4px;
+  font-size:15px;
+  line-height:1.8;
+}
+.structure-flow{
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+  margin-top:12px;
+}
+.struct-step{
+  padding:12px 18px;
+  background:#fff;
+  border:1px solid #e5e7eb;
+  border-left:4px solid var(--navy);
+  border-radius:4px;
+  font-size:14.5px;
+}
+.struct-step strong{color:var(--navy)}
+
+/* ===== 변형문제 (퀴즈) ===== */
+.quiz-block{
+  margin-bottom:35px;
+  padding:25px;
+  background:#fafaf7;
+  border:1px solid #e0d9c4;
+  border-radius:10px;
+}
+.quiz-num{
+  display:inline-block;
+  background:var(--navy);
+  color:var(--gold-light);
+  padding:5px 14px;
+  border-radius:20px;
+  font-size:13px;
+  font-weight:700;
+  margin-bottom:12px;
+}
+.quiz-question{
+  font-size:15px;
+  font-weight:500;
+  margin-bottom:15px;
+  color:#1f2937;
+  line-height:1.7;
+}
+.quiz-passage{
+  font-family:'EB Garamond',serif;
+  font-size:15px;
+  line-height:1.9;
+  padding:15px 20px;
+  background:#fff;
+  border:1px solid #d1d5db;
+  border-radius:6px;
+  margin-bottom:15px;
+  color:#1f2937;
+}
+.quiz-options{list-style:none}
+.quiz-option{
+  display:block;
+  padding:12px 18px;
+  margin-bottom:8px;
+  background:#fff;
+  border:1.5px solid #d1d5db;
+  border-radius:6px;
+  cursor:pointer;
+  transition:all 0.2s;
+  font-size:14.5px;
+  line-height:1.6;
+}
+.quiz-option:hover{border-color:var(--navy);background:#f0f4f8}
+.quiz-option.correct{background:#d1fae5;border-color:#059669;color:#065f46;font-weight:500}
+.quiz-option.wrong{background:#fee2e2;border-color:#dc2626;color:#991b1b}
+.quiz-option.disabled{cursor:not-allowed;pointer-events:none}
+.quiz-option-num{
+  display:inline-block;
+  width:24px;height:24px;line-height:24px;
+  text-align:center;
+  background:#e5e7eb;
+  border-radius:50%;
+  font-weight:700;
+  margin-right:10px;
+  font-size:13px;
+}
+.quiz-option.correct .quiz-option-num{background:#059669;color:#fff}
+.quiz-option.wrong .quiz-option-num{background:#dc2626;color:#fff}
+
+.quiz-feedback{
+  margin-top:12px;
+  padding:12px 16px;
+  border-radius:6px;
+  font-size:14px;
+  display:none;
+}
+.quiz-feedback.show{display:block}
+.quiz-feedback.correct{background:#d1fae5;color:#065f46;border-left:4px solid #059669}
+.quiz-feedback.wrong{background:#fee2e2;color:#991b1b;border-left:4px solid #dc2626}
+
+.quiz-reset{
+  margin-top:10px;
+  padding:7px 16px;
+  background:var(--navy);
+  color:#fff;
+  border:none;
+  border-radius:4px;
+  cursor:pointer;
+  font-size:13px;
+  font-family:inherit;
+}
+.quiz-reset:hover{background:var(--navy-light)}
+
+/* ===== 서술형 ===== */
+.essay-block{
+  margin-bottom:30px;
+  padding:25px;
+  background:#fff;
+  border:1px solid #e0d9c4;
+  border-left:5px solid var(--gold);
+  border-radius:8px;
+}
+.essay-label{
+  display:inline-block;
+  background:var(--gold);
+  color:#fff;
+  padding:4px 12px;
+  border-radius:4px;
+  font-size:12px;
+  font-weight:700;
+  margin-bottom:10px;
+  letter-spacing:0.5px;
+}
+.essay-condition{
+  font-size:13.5px;
+  color:#6b7280;
+  margin-bottom:12px;
+  padding:8px 14px;
+  background:#f9fafb;
+  border-left:3px solid #9ca3af;
+  border-radius:3px;
+  font-style:italic;
+}
+.essay-question{font-size:15px;margin-bottom:14px;line-height:1.7}
+.essay-input{
+  width:100%;
+  min-height:100px;
+  padding:12px 15px;
+  border:1.5px solid #d1d5db;
+  border-radius:6px;
+  font-family:'EB Garamond','Noto Sans KR',serif;
+  font-size:14.5px;
+  line-height:1.8;
+  resize:vertical;
+}
+.essay-input:focus{outline:none;border-color:var(--navy)}
+.essay-toggle-btn{
+  margin-top:12px;
+  padding:10px 20px;
+  background:var(--navy);
+  color:#fff;
+  border:none;
+  border-radius:6px;
+  cursor:pointer;
+  font-family:inherit;
+  font-size:14px;
+  font-weight:500;
+}
+.essay-toggle-btn:hover{background:var(--navy-light)}
+.essay-answer{
+  display:none;
+  margin-top:14px;
+  padding:16px 20px;
+  background:#E2EFDA;
+  border-left:4px solid #375623;
+  border-radius:6px;
+  font-size:14.5px;
+  line-height:1.8;
+  color:#1a4820;
+}
+.essay-answer.show{display:block}
+.essay-answer-label{font-weight:700;color:#375623;margin-bottom:6px;display:block;font-size:13px}
+
+/* ===== Footer ===== */
+.footer{
+  margin-top:40px;
+  padding:20px;
+  text-align:center;
+  color:var(--gray);
+  font-size:13px;
+  border-top:1px solid var(--light-gray);
+}
+.footer-brand{
+  font-family:'Playfair Display',serif;
+  color:var(--navy);
+  font-weight:700;
+  font-size:15px;
+  margin-bottom:4px;
+}
+
+/* ===== Responsive ===== */
+@media(max-width:900px){
+  .sidebar{transform:translateX(-100%);transition:transform 0.3s;width:260px}
+  .sidebar.show{transform:translateX(0)}
+  .main{margin-left:0;padding:60px 18px 40px}
+  .mobile-toggle{display:block}
+  .passage-title{font-size:22px}
+  .tab-btn{padding:10px 13px;font-size:13px}
+  .tab-content{padding:22px 18px}
+  .vocab-item{grid-template-columns:1fr;gap:5px}
+  .vocab-pos{text-align:left}
+  .full-passage{padding:20px;font-size:15.5px}
+  .sent-eng{font-size:15.5px;padding:14px 16px}
+  .quiz-block{padding:18px}
+  .passage-header{padding:22px 20px}
+}
+</style>
+</head>
+<body>
+<button class="mobile-toggle" onclick="toggleSidebar()">☰</button>
+<div class="app">
+  <aside class="sidebar" id="sidebar">
+    <div class="brand">
+      <div class="brand-title">에듀케레 영수학원</div>
+      <div class="brand-sub">EDUCARE English &amp; Math Academy</div>
+    </div>
+    <div class="series-title">범어고 외부지문 분석</div>
+    <ul class="passage-list">
+      <li class="passage-item active" onclick="showPassage(1)"><span class="passage-num">1</span>Beethoven &amp; Curiosity</li>
+      <li class="passage-item" onclick="showPassage(2)"><span class="passage-num">2</span>Process in Sports</li>
+      <li class="passage-item" onclick="showPassage(3)"><span class="passage-num">3</span>Writing in Knowledge Era</li>
+      <li class="passage-item" onclick="showPassage(4)"><span class="passage-num">4</span>Managers &amp; Actions</li>
+      <li class="passage-item" onclick="showPassage(5)"><span class="passage-num">5</span>Leaders &amp; Followers</li>
+      <li class="passage-item" onclick="showPassage(6)"><span class="passage-num">6</span>Stay Relevant</li>
+    </ul>
+  </aside>
+  <main class="main">
+    <!-- ============ PASSAGE 1: Beethoven & Curiosity ============ -->
+    <section class="passage active" id="p1">
+      <div class="passage-header">
+        <div class="passage-title">Passage 1. Beethoven &amp; Curiosity</div>
+        <div class="passage-subtitle">호기심이 이끄는 창의성 — 어법 문제 지문</div>
+      </div>
+      <div class="tabs">
+        <button class="tab-btn active" onclick="showTab(1,1)">① 전문</button>
+        <button class="tab-btn" onclick="showTab(1,2)">② 문장분석</button>
+        <button class="tab-btn" onclick="showTab(1,3)">③ 핵심단어</button>
+        <button class="tab-btn" onclick="showTab(1,4)">④ 전문해석</button>
+        <button class="tab-btn" onclick="showTab(1,5)">⑤ 주제·요지</button>
+        <button class="tab-btn" onclick="showTab(1,6)">⑥ 변형문제</button>
+      </div>
+
+      <!-- Tab 1: 전문 -->
+      <div class="tab-content active" id="p1t1">
+        <div class="full-passage"><span class="sent-num">①</span> Beethoven's drive to create something novel is a reflection of his state of curiosity. <span class="sent-num">②</span> Our brains experience a sense of reward when we create something new in the process of exploring something uncertain, such as a musical phrase that we've never played or heard before. <span class="sent-num">③</span> When our curiosity leads to something novel, the resulting reward brings us a sense of pleasure. <span class="sent-num">④</span> A number of investigators have modeled how curiosity influences musical composition. <span class="sent-num">⑤</span> In the case of Beethoven, computer modeling focused on the thirty-two piano sonatas written after age thirteen revealed that the musical patterns found in all of Beethoven's music decreased in later sonatas, while novel patterns, including patterns that were unique to a particular sonata, increased. <span class="sent-num">⑥</span> In other words, Beethoven's music became less predictable over time as his curiosity drove the exploration of new musical ideas. <span class="sent-num">⑦</span> Curiosity is a powerful driver of human creativity.</div>
+        <div class="source-note">* sonata: 악곡의 한 형식</div>
+      </div>
+
+      <!-- Tab 2: 문장분석 -->
+      <div class="tab-content" id="p1t2">
+        <!-- Sentence 1 -->
+        <div class="sent-block">
+          <div class="sent-number-badge">①</div>
+          <div class="sent-eng">Beethoven's drive to create something novel is a reflection of his state of curiosity.</div>
+          <div class="sent-slash">
+            <span class="slash-en">Beethoven's drive / to create something novel / is a reflection / of his state of curiosity.</span>
+            <span class="slash-ko">베토벤의 욕구는 / 새로운 것을 창조하려는 / 반영이다 / 그의 호기심 상태의.</span>
+          </div>
+          <ul class="grammar-list">
+            <li class="grammar-item"><span class="g-title">◆ to부정사 형용사적 용법</span> ▶ <span class="g-example">drive to create</span> ★ <span class="g-point">명사 drive를 수식하는 to부정사</span></li>
+            <li class="grammar-item"><span class="g-title">◆ -thing + 형용사 어순</span> ▶ <span class="g-example">something novel</span> ★ <span class="g-point">형용사가 -thing 계열 대명사를 뒤에서 수식</span></li>
+            <li class="grammar-item"><span class="g-title">◆ 소유격 명사 주어</span> ▶ <span class="g-example">Beethoven's drive</span> ★ <span class="g-point">단수 주어이므로 동사 is 사용</span></li>
+          </ul>
+        </div>
+
+        <!-- Sentence 2 -->
+        <div class="sent-block">
+          <div class="sent-number-badge">②</div>
+          <div class="sent-eng">Our brains experience a sense of reward when we create something new in the process of exploring something uncertain, such as a musical phrase that we've never played or heard before.</div>
+          <div class="sent-slash">
+            <span class="slash-en">Our brains experience a sense of reward / when we create something new / in the process of exploring something uncertain, / such as a musical phrase / that we've never played or heard before.</span>
+            <span class="slash-ko">우리 뇌는 보상감을 경험한다 / 우리가 새로운 것을 창조할 때 / 불확실한 무언가를 탐색하는 과정에서 / 예를 들어 음악 구절 같은 / 우리가 이전에 연주하거나 들어본 적 없는.</span>
+          </div>
+          <ul class="grammar-list">
+            <li class="grammar-item"><span class="g-title">◆ 관계대명사 that (어법 ①)</span> ▶ <span class="g-example">a musical phrase that we've never played</span> ★ <span class="g-point">선행사 phrase를 수식, 목적격 관계대명사 that (뒤에 목적어 없음)</span></li>
+            <li class="grammar-item"><span class="g-title">◆ 현재완료 경험</span> ▶ <span class="g-example">we've never played or heard</span> ★ <span class="g-point">과거부터 지금까지의 경험 부정</span></li>
+            <li class="grammar-item"><span class="g-title">◆ 전치사 + 동명사</span> ▶ <span class="g-example">in the process of exploring</span> ★ <span class="g-point">전치사 of 뒤에 동명사 exploring</span></li>
+            <li class="grammar-item"><span class="g-title">◆ 시간 부사절 when</span> ▶ <span class="g-example">when we create something new</span> ★ <span class="g-point">시간을 나타내는 종속접속사 when</span></li>
+          </ul>
+        </div>
+
+        <!-- Sentence 3 -->
+        <div class="sent-block">
+          <div class="sent-number-badge">③</div>
+          <div class="sent-eng">When our curiosity leads to something novel, the resulting reward brings us a sense of pleasure.</div>
+          <div class="sent-slash">
+            <span class="slash-en">When our curiosity leads to something novel, / the resulting reward / brings us a sense of pleasure.</span>
+            <span class="slash-ko">우리의 호기심이 새로운 것으로 이어질 때 / 그 결과 생기는 보상은 / 우리에게 즐거움을 가져다준다.</span>
+          </div>
+          <ul class="grammar-list">
+            <li class="grammar-item"><span class="g-title">◆ 현재분사 (어법 ②)</span> ▶ <span class="g-example">the resulting reward</span> ★ <span class="g-point">reward가 결과로 '생기는' 능동 의미 → 현재분사 resulting</span></li>
+            <li class="grammar-item"><span class="g-title">◆ 4형식 동사 bring</span> ▶ <span class="g-example">brings us a sense</span> ★ <span class="g-point">bring + 간접목적어(us) + 직접목적어(a sense)</span></li>
+            <li class="grammar-item"><span class="g-title">◆ 시간 부사절 When</span> ▶ <span class="g-example">When our curiosity leads</span> ★ <span class="g-point">종속절이 주절 앞에 올 때 콤마로 구분</span></li>
+          </ul>
+        </div>
+
+        <!-- Sentence 4 -->
+        <div class="sent-block">
+          <div class="sent-number-badge">④</div>
+          <div class="sent-eng">A number of investigators have modeled how curiosity influences musical composition.</div>
+          <div class="sent-slash">
+            <span class="slash-en">A number of investigators / have modeled / how curiosity influences musical composition.</span>
+            <span class="slash-ko">많은 연구자들이 / 모델화해왔다 / 호기심이 음악 작곡에 어떻게 영향을 미치는지를.</span>
+          </div>
+          <ul class="grammar-list">
+            <li class="grammar-item"><span class="g-title">◆ a number of + 복수명사 (어법 ③)</span> ▶ <span class="g-example">A number of investigators have</span> ★ <span class="g-point">'많은 ~'의 뜻, 복수 취급 → 복수동사 have</span></li>
+            <li class="grammar-item"><span class="g-title">◆ 의문사절 (간접의문문)</span> ▶ <span class="g-example">how curiosity influences...</span> ★ <span class="g-point">동사 modeled의 목적어로 쓰인 명사절, '의문사+S+V' 어순</span></li>
+            <li class="grammar-item"><span class="g-title">◆ 현재완료 계속</span> ▶ <span class="g-example">have modeled</span> ★ <span class="g-point">과거부터 현재까지 이어진 연구 활동</span></li>
+          </ul>
+        </div>
+
+        <!-- Sentence 5 -->
+        <div class="sent-block">
+          <div class="sent-number-badge">⑤</div>
+          <div class="sent-eng">In the case of Beethoven, computer modeling focused on the thirty-two piano sonatas written after age thirteen revealed that the musical patterns found in all of Beethoven's music decreased in later sonatas, while novel patterns, including patterns that were unique to a particular sonata, increased.</div>
+          <div class="sent-slash">
+            <span class="slash-en">In the case of Beethoven, / computer modeling / focused on the thirty-two piano sonatas / written after age thirteen / revealed / that the musical patterns / found in all of Beethoven's music / decreased in later sonatas, / while novel patterns, / including patterns that were unique to a particular sonata, / increased.</span>
+            <span class="slash-ko">베토벤의 경우 / 컴퓨터 모델링은 / 32개의 피아노 소나타에 초점을 맞춘 / 13세 이후에 쓰인 / 밝혀냈다 / 음악적 패턴이 / 베토벤의 모든 음악에서 발견되는 / 후기 소나타에서는 감소했다는 것을 / 반면에 새로운 패턴들은 / 특정 소나타에만 고유한 패턴들을 포함하여 / 증가했다는 것을.</span>
+          </div>
+          <ul class="grammar-list">
+            <li class="grammar-item"><span class="g-title">◆ 과거분사 수식 (어법 ④)</span> ▶ <span class="g-example">sonatas written after age thirteen</span> ★ <span class="g-point">sonatas가 '쓰여진' 수동 관계 → 과거분사 written</span></li>
+            <li class="grammar-item"><span class="g-title">◆ 주어-동사 수일치 (어법 ⑤)</span> ▶ <span class="g-example">novel patterns ... increased</span> ★ <span class="g-point">주어 novel patterns(복수)에 수일치된 동사 increased</span></li>
+            <li class="grammar-item"><span class="g-title">◆ 과거분사 수식구</span> ▶ <span class="g-example">patterns found in all of Beethoven's music</span> ★ <span class="g-point">patterns를 수식하는 과거분사구 (수동: 발견되는 패턴)</span></li>
+            <li class="grammar-item"><span class="g-title">◆ 접속사 while (대조)</span> ▶ <span class="g-example">decreased ... while ... increased</span> ★ <span class="g-point">'반면에'의 의미로 두 절을 대조</span></li>
+          </ul>
+        </div>
+
+        <!-- Sentence 6 -->
+        <div class="sent-block">
+          <div class="sent-number-badge">⑥</div>
+          <div class="sent-eng">In other words, Beethoven's music became less predictable over time as his curiosity drove the exploration of new musical ideas.</div>
+          <div class="sent-slash">
+            <span class="slash-en">In other words, / Beethoven's music / became less predictable over time / as his curiosity / drove the exploration of new musical ideas.</span>
+            <span class="slash-ko">다시 말해 / 베토벤의 음악은 / 시간이 지남에 따라 덜 예측 가능해졌다 / 그의 호기심이 / 새로운 음악적 아이디어의 탐구를 이끌면서.</span>
+          </div>
+          <ul class="grammar-list">
+            <li class="grammar-item"><span class="g-title">◆ 2형식 become + 형용사</span> ▶ <span class="g-example">became less predictable</span> ★ <span class="g-point">become 뒤에 주격보어로 형용사 사용</span></li>
+            <li class="grammar-item"><span class="g-title">◆ 접속사 as</span> ▶ <span class="g-example">as his curiosity drove</span> ★ <span class="g-point">'~하면서'의 동시성/이유를 나타내는 접속사</span></li>
+            <li class="grammar-item"><span class="g-title">◆ 비교급 less + 형용사</span> ▶ <span class="g-example">less predictable</span> ★ <span class="g-point">'덜 ~한'의 열등비교 표현</span></li>
+          </ul>
+        </div>
+
+        <!-- Sentence 7 -->
+        <div class="sent-block">
+          <div class="sent-number-badge">⑦</div>
+          <div class="sent-eng">Curiosity is a powerful driver of human creativity.</div>
+          <div class="sent-slash">
+            <span class="slash-en">Curiosity / is a powerful driver / of human creativity.</span>
+            <span class="slash-ko">호기심은 / 강력한 원동력이다 / 인간 창의성의.</span>
+          </div>
+          <ul class="grammar-list">
+            <li class="grammar-item"><span class="g-title">◆ 2형식 be동사 + 명사 보어</span> ▶ <span class="g-example">is a powerful driver</span> ★ <span class="g-point">주어=보어 관계</span></li>
+            <li class="grammar-item"><span class="g-title">◆ 주제문 구조</span> ▶ <span class="g-example">Curiosity is ... creativity.</span> ★ <span class="g-point">지문의 결론이자 주제를 요약한 문장</span></li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Tab 3: 핵심단어 -->
+      <div class="tab-content" id="p1t3">
+        <ul class="vocab-list">
+          <li class="vocab-item"><span class="vocab-word">drive</span><span class="vocab-meaning">욕구, 추진력</span><span class="vocab-pos">n.</span><span class="vocab-deriv">driven (adj.) 추진되는</span></li>
+          <li class="vocab-item"><span class="vocab-word">novel</span><span class="vocab-meaning">새로운, 참신한</span><span class="vocab-pos">adj.</span><span class="vocab-deriv">novelty (n.) 참신함</span></li>
+          <li class="vocab-item"><span class="vocab-word">reflection</span><span class="vocab-meaning">반영, 반성</span><span class="vocab-pos">n.</span><span class="vocab-deriv">reflect (v.) 반영하다</span></li>
+          <li class="vocab-item"><span class="vocab-word">curiosity</span><span class="vocab-meaning">호기심</span><span class="vocab-pos">n.</span><span class="vocab-deriv">curious (adj.) 호기심 있는</span></li>
+          <li class="vocab-item"><span class="vocab-word">reward</span><span class="vocab-meaning">보상</span><span class="vocab-pos">n.</span><span class="vocab-deriv">rewarding (adj.) 보람 있는</span></li>
+          <li class="vocab-item"><span class="vocab-word">explore</span><span class="vocab-meaning">탐색하다, 탐구하다</span><span class="vocab-pos">v.</span><span class="vocab-deriv">exploration (n.) 탐구</span></li>
+          <li class="vocab-item"><span class="vocab-word">uncertain</span><span class="vocab-meaning">불확실한</span><span class="vocab-pos">adj.</span><span class="vocab-deriv">uncertainty (n.) 불확실성</span></li>
+          <li class="vocab-item"><span class="vocab-word">phrase</span><span class="vocab-meaning">(음악의) 구절, 문구</span><span class="vocab-pos">n.</span><span class="vocab-deriv">—</span></li>
+          <li class="vocab-item"><span class="vocab-word">pleasure</span><span class="vocab-meaning">즐거움, 기쁨</span><span class="vocab-pos">n.</span><span class="vocab-deriv">pleasant (adj.) 즐거운</span></li>
+          <li class="vocab-item"><span class="vocab-word">investigator</span><span class="vocab-meaning">연구자, 조사자</span><span class="vocab-pos">n.</span><span class="vocab-deriv">investigate (v.) 조사하다</span></li>
+          <li class="vocab-item"><span class="vocab-word">influence</span><span class="vocab-meaning">영향을 미치다</span><span class="vocab-pos">v.</span><span class="vocab-deriv">influential (adj.) 영향력 있는</span></li>
+          <li class="vocab-item"><span class="vocab-word">composition</span><span class="vocab-meaning">작곡, 구성</span><span class="vocab-pos">n.</span><span class="vocab-deriv">compose (v.) 작곡하다</span></li>
+          <li class="vocab-item"><span class="vocab-word">reveal</span><span class="vocab-meaning">밝히다, 드러내다</span><span class="vocab-pos">v.</span><span class="vocab-deriv">revelation (n.) 폭로</span></li>
+          <li class="vocab-item"><span class="vocab-word">unique</span><span class="vocab-meaning">고유한, 독특한</span><span class="vocab-pos">adj.</span><span class="vocab-deriv">uniqueness (n.) 독특함</span></li>
+          <li class="vocab-item"><span class="vocab-word">predictable</span><span class="vocab-meaning">예측 가능한</span><span class="vocab-pos">adj.</span><span class="vocab-deriv">predict (v.) 예측하다</span></li>
+        </ul>
+      </div>
+
+      <!-- Tab 4: 전문해석 -->
+      <div class="tab-content" id="p1t4">
+        <div class="translation">
+          새로운 것을 창조하려는 베토벤의 욕구는 그의 호기심 상태를 반영한다. 우리 뇌는 이전에 연주하거나 들어본 적 없는 음악 구절과 같은 불확실한 무언가를 탐색하는 과정에서 새로운 것을 창조할 때 보상감을 경험한다. 우리의 호기심이 새로운 것으로 이어질 때, 그 결과로 생기는 보상은 우리에게 즐거움을 가져다준다. 많은 연구자들은 호기심이 음악 작곡에 어떻게 영향을 미치는지를 모델링해 왔다. 베토벤의 경우, 13세 이후에 쓰인 32개의 피아노 소나타에 초점을 맞춘 컴퓨터 모델링은, 베토벤의 모든 음악에서 발견되는 음악 패턴이 후기 소나타에서는 감소한 반면, 특정 소나타에만 고유한 패턴들을 포함한 새로운 패턴들은 증가했음을 밝혀냈다. 다시 말해, 그의 호기심이 새로운 음악적 아이디어의 탐구를 이끌면서, 베토벤의 음악은 시간이 지남에 따라 덜 예측 가능해졌다. 호기심은 인간 창의성의 강력한 원동력이다.
+        </div>
+      </div>
+
+      <!-- Tab 5: 주제·요지 -->
+      <div class="tab-content" id="p1t5">
+        <div class="topic-section">
+          <div class="topic-label">주제</div>
+          <div class="topic-content">인간 창의성의 원동력으로 작용하는 호기심 (베토벤 사례)</div>
+        </div>
+        <div class="topic-section">
+          <div class="topic-label">요지</div>
+          <div class="topic-content">호기심은 새로운 것을 탐색하고 창조할 때 뇌에 보상감을 주며, 이는 베토벤의 후기 소나타에서 새로운 음악 패턴이 증가한 사실처럼 인간 창의성을 추동하는 강력한 힘이다.</div>
+        </div>
+        <div class="topic-section">
+          <div class="topic-label">구조 흐름</div>
+          <div class="structure-flow">
+            <div class="struct-step"><strong>① 도입:</strong> 베토벤의 창작 욕구 = 호기심의 반영</div>
+            <div class="struct-step"><strong>② 원리:</strong> 새로운 것을 탐색·창조할 때 뇌가 보상감을 느낌</div>
+            <div class="struct-step"><strong>③ 증거:</strong> 베토벤 32개 소나타 컴퓨터 모델링 — 후기로 갈수록 새로운 패턴 증가</div>
+            <div class="struct-step"><strong>④ 결론:</strong> 호기심은 인간 창의성의 강력한 원동력</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tab 6: 변형문제 -->
+      <div class="tab-content" id="p1t6">
+        <!-- Q1: 주제추론 -->
+        <div class="quiz-block" id="p1q1">
+          <span class="quiz-num">문제 1. 주제 추론</span>
+          <div class="quiz-question">윗글의 주제로 가장 적절한 것은?</div>
+          <ul class="quiz-options">
+            <li class="quiz-option" onclick="checkAns('p1q1',this,false)"><span class="quiz-option-num">①</span>음악 작곡에서 반복되는 패턴의 중요성</li>
+            <li class="quiz-option" onclick="checkAns('p1q1',this,true)"><span class="quiz-option-num">②</span>호기심이 인간 창의성의 원동력이 되는 원리</li>
+            <li class="quiz-option" onclick="checkAns('p1q1',this,false)"><span class="quiz-option-num">③</span>베토벤의 음악이 후세에 끼친 영향</li>
+            <li class="quiz-option" onclick="checkAns('p1q1',this,false)"><span class="quiz-option-num">④</span>컴퓨터 모델링을 활용한 음악 분석의 한계</li>
+            <li class="quiz-option" onclick="checkAns('p1q1',this,false)"><span class="quiz-option-num">⑤</span>불확실성이 학습에 미치는 부정적 영향</li>
+          </ul>
+          <div class="quiz-feedback" id="fb-p1q1"></div>
+          <button class="quiz-reset" onclick="resetQuiz('p1q1')">다시 풀기</button>
+        </div>
+
+        <!-- Q2: 빈칸추론 -->
+        <div class="quiz-block" id="p1q2">
+          <span class="quiz-num">문제 2. 빈칸 추론</span>
+          <div class="quiz-question">다음 빈칸에 들어갈 말로 가장 적절한 것은?</div>
+          <div class="quiz-passage">Beethoven's music became less predictable over time as his curiosity drove <u>_____________</u>. Curiosity is a powerful driver of human creativity.</div>
+          <ul class="quiz-options">
+            <li class="quiz-option" onclick="checkAns('p1q2',this,false)"><span class="quiz-option-num">①</span>the repetition of familiar patterns</li>
+            <li class="quiz-option" onclick="checkAns('p1q2',this,false)"><span class="quiz-option-num">②</span>the preservation of classical traditions</li>
+            <li class="quiz-option" onclick="checkAns('p1q2',this,true)"><span class="quiz-option-num">③</span>the exploration of new musical ideas</li>
+            <li class="quiz-option" onclick="checkAns('p1q2',this,false)"><span class="quiz-option-num">④</span>the commercial success of his sonatas</li>
+            <li class="quiz-option" onclick="checkAns('p1q2',this,false)"><span class="quiz-option-num">⑤</span>the simplification of complex compositions</li>
+          </ul>
+          <div class="quiz-feedback" id="fb-p1q2"></div>
+          <button class="quiz-reset" onclick="resetQuiz('p1q2')">다시 풀기</button>
+        </div>
+
+        <!-- Q3: 어법 -->
+        <div class="quiz-block" id="p1q3">
+          <span class="quiz-num">문제 3. 어법 오류 찾기</span>
+          <div class="quiz-question">밑줄 친 ①~⑤ 중 어법상 <strong>틀린</strong> 것은?</div>
+          <div class="quiz-passage">Our brains experience a sense of reward when we create something new in the process of exploring something uncertain, such as a musical phrase <u>① that</u> we've never played or heard before. When our curiosity leads to something novel, the <u>② resulting</u> reward brings us a sense of pleasure. A number of investigators <u>③ have</u> modeled how curiosity influences musical composition. In the case of Beethoven, computer modeling focused on the thirty-two piano sonatas <u>④ writing</u> after age thirteen revealed that the musical patterns found in all of Beethoven's music decreased in later sonatas, while novel patterns, including patterns that were unique to a particular sonata, <u>⑤ increased</u>.</div>
+          <ul class="quiz-options">
+            <li class="quiz-option" onclick="checkAns('p1q3',this,false)"><span class="quiz-option-num">①</span>that — 목적격 관계대명사 (정상)</li>
+            <li class="quiz-option" onclick="checkAns('p1q3',this,false)"><span class="quiz-option-num">②</span>resulting — 현재분사 (정상)</li>
+            <li class="quiz-option" onclick="checkAns('p1q3',this,false)"><span class="quiz-option-num">③</span>have — A number of + 복수동사 (정상)</li>
+            <li class="quiz-option" onclick="checkAns('p1q3',this,true)"><span class="quiz-option-num">④</span>writing → written (수동 관계)</li>
+            <li class="quiz-option" onclick="checkAns('p1q3',this,false)"><span class="quiz-option-num">⑤</span>increased — 주어 novel patterns와 수일치 (정상)</li>
+          </ul>
+          <div class="quiz-feedback" id="fb-p1q3"></div>
+          <button class="quiz-reset" onclick="resetQuiz('p1q3')">다시 풀기</button>
+        </div>
+
+        <!-- Q4: 내용불일치 -->
+        <div class="quiz-block" id="p1q4">
+          <span class="quiz-num">문제 4. 내용 불일치</span>
+          <div class="quiz-question">윗글의 내용과 일치하지 <strong>않는</strong> 것은?</div>
+          <ul class="quiz-options">
+            <li class="quiz-option" onclick="checkAns('p1q4',this,false)"><span class="quiz-option-num">①</span>베토벤의 창작 욕구는 그의 호기심 상태를 반영한다.</li>
+            <li class="quiz-option" onclick="checkAns('p1q4',this,false)"><span class="quiz-option-num">②</span>우리 뇌는 새로운 것을 창조할 때 보상감을 경험한다.</li>
+            <li class="quiz-option" onclick="checkAns('p1q4',this,true)"><span class="quiz-option-num">③</span>베토벤의 후기 소나타에서는 기존 패턴이 증가했다.</li>
+            <li class="quiz-option" onclick="checkAns('p1q4',this,false)"><span class="quiz-option-num">④</span>컴퓨터 모델링은 13세 이후에 쓰인 32개 피아노 소나타에 초점을 맞췄다.</li>
+            <li class="quiz-option" onclick="checkAns('p1q4',this,false)"><span class="quiz-option-num">⑤</span>호기심은 인간 창의성의 강력한 원동력이다.</li>
+          </ul>
+          <div class="quiz-feedback" id="fb-p1q4"></div>
+          <button class="quiz-reset" onclick="resetQuiz('p1q4')">다시 풀기</button>
+        </div>
+
+        <!-- Q5: 서술형 1 - 빈칸 요약 -->
+        <div class="essay-block">
+          <span class="essay-label">서술형 1</span>
+          <div class="essay-condition">[조건] 본문에서 찾아 빈칸을 완성하시오. 각 빈칸에는 한 단어씩 들어갑니다.</div>
+          <div class="essay-question">윗글의 요지를 한 문장으로 요약할 때, 빈칸에 들어갈 말을 본문에서 찾아 쓰시오.<br><br>→ Human (A) <u>__________</u> is driven by (B) <u>__________</u>, which rewards the brain when it explores and creates something novel.</div>
+          <textarea class="essay-input" placeholder="(A) :&#10;(B) :"></textarea>
+          <button class="essay-toggle-btn" onclick="toggleAns(this)">모범답안 보기</button>
+          <div class="essay-answer">
+            <span class="essay-answer-label">▶ 모범답안</span>
+            (A) creativity &nbsp; / &nbsp; (B) curiosity
+          </div>
+        </div>
+
+        <!-- Q6: 서술형 2 -->
+        <div class="essay-block">
+          <span class="essay-label">서술형 2</span>
+          <div class="essay-condition">[조건] 본문 내용을 바탕으로 완전한 영어 문장으로, 25단어 내외로 작성하시오.</div>
+          <div class="essay-question">Explain what the computer modeling of Beethoven's thirty-two piano sonatas revealed about the change in his musical patterns over time.</div>
+          <textarea class="essay-input" placeholder="Write your answer here..."></textarea>
+          <button class="essay-toggle-btn" onclick="toggleAns(this)">모범답안 보기</button>
+          <div class="essay-answer">
+            <span class="essay-answer-label">▶ 모범답안</span>
+            The modeling revealed that the musical patterns common to all of Beethoven's music decreased in his later sonatas, while novel patterns, including ones unique to a particular sonata, increased. (about 29 words)
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ PASSAGE 2: Process in Sports ============ -->
+    <section class="passage" id="p2">
+      <div class="passage-header">
+        <div class="passage-title">Passage 2. Process in Sports</div>
+        <div class="passage-subtitle">프로와 아마추어의 차이 — 과정에 집중하기</div>
+      </div>
+      <div class="tabs">
+        <button class="tab-btn active" onclick="showTab(2,1)">① 전문</button>
+        <button class="tab-btn" onclick="showTab(2,2)">② 문장분석</button>
+        <button class="tab-btn" onclick="showTab(2,3)">③ 핵심단어</button>
+        <button class="tab-btn" onclick="showTab(2,4)">④ 전문해석</button>
+        <button class="tab-btn" onclick="showTab(2,5)">⑤ 주제·요지</button>
+        <button class="tab-btn" onclick="showTab(2,6)">⑥ 변형문제</button>
+      </div>
+
+      <!-- Tab 1: 전문 -->
+      <div class="tab-content active" id="p2t1">
+        <div class="full-passage"><span class="sent-num">①</span> In professional sports these days, it is not unusual to hear players and coaches talking about process. <span class="sent-num">②</span> They talk about focusing on the process and following the process. <span class="sent-num">③</span> Rarely do they talk about scoring a goal, a touchdown, a home run, a point, or achieving a good shot. <span class="sent-num">④</span> It's all about process. <span class="sent-num">⑤</span> So, what do they mean by this? <span class="sent-num">⑥</span> What they mean by focusing on the process is that they focus on the actions they need to take in order to achieve their desired result. <span class="sent-num">⑦</span> They don't focus on the result itself. <span class="sent-num">⑧</span> The reasoning here is that if you follow the steps required, then the result will look after itself. <span class="sent-num">⑨</span> This is one of the big differences between professional and amateur sportspeople. <span class="sent-num">⑩</span> Amateurs often focus on the result and forget about doing all the things that would almost automatically lead to the result.</div>
+      </div>
+
+      <!-- Tab 2: 문장분석 -->
+      <div class="tab-content" id="p2t2">
+        <!-- Sentence 1 -->
+        <div class="sent-block">
+          <div class="sent-number-badge">①</div>
+          <div class="sent-eng">In professional sports these days, it is not unusual to hear players and coaches talking about process.</div>
+          <div class="sent-slash">
+            <span class="slash-en">In professional sports these days, / it is not unusual / to hear players and coaches / talking about process.</span>
+            <span class="slash-ko">요즘 프로 스포츠에서 / 흔한 일이다 / 선수와 코치들이 / 과정에 대해 이야기하는 것을 듣는 것은.</span>
+          </div>
+          <ul class="grammar-list">
+            <li class="grammar-item"><span class="g-title">◆ 가주어-진주어 it ~ to부정사</span> ▶ <span class="g-example">it is not unusual to hear</span> ★ <span class="g-point">it(가주어) ... to hear(진주어), '~하는 것은 드물지 않다'</span></li>
+            <li class="grammar-item"><span class="g-title">◆ 지각동사 + O + 현재분사</span> ▶ <span class="g-example">hear players ... talking</span> ★ <span class="g-point">hear + 목적어 + 현재분사 (진행 중인 동작 강조)</span></li>
+            <li class="grammar-item"><span class="g-title">◆ 이중부정 표현</span> ▶ <span class="g-example">not unusual</span> ★ <span class="g-point">부정 + 부정적 형용사 = 강한 긍정 '꽤 흔하다'</span></li>
+          </ul>
+        </div>
+
+        <!-- Sentence 2 -->
+        <div class="sent-block">
+          <div class="sent-number-badge">②</div>
+          <div class="sent-eng">They talk about focusing on the process and following the process.</div>
+          <div class="sent-slash">
+            <span class="slash-en">They talk about / focusing on the process / and following the process.</span>
+            <span class="slash-ko">그들은 이야기한다 / 과정에 집중하는 것에 대해 / 그리고 과정을 따르는 것에 대해.</span>
+          </div>
+          <ul class="grammar-list">
+            <li class="grammar-item"><span class="g-title">◆ 전치사 + 동명사</span> ▶ <span class="g-example">talk about focusing ... following</span> ★ <span class="g-point">전치사 about 뒤에 동명사 병렬 연결</span></li>
+            <li class="grammar-item"><span class="g-title">◆ 동명사 병렬구조</span> ▶ <span class="g-example">focusing ... and following</span> ★ <span class="g-point">and로 연결된 동명사 두 개의 병렬</span></li>
+          </ul>
+        </div>
+
+        <!-- Sentence 3 -->
+        <div class="sent-block">
+          <div class="sent-number-badge">③</div>
+          <div class="sent-eng">Rarely do they talk about scoring a goal, a touchdown, a home run, a point, or achieving a good shot.</div>
+          <div class="sent-slash">
+            <span class="slash-en">Rarely / do they talk / about scoring a goal, a touchdown, a home run, a point, / or achieving a good shot.</span>
+            <span class="slash-ko">좀처럼 ~않는다 / 그들은 이야기하는 것을 / 골, 터치다운, 홈런, 점수를 올리는 것에 대해 / 또는 좋은 슛을 성공시키는 것에 대해.</span>
+          </div>
+          <ul class="grammar-list">
+            <li class="grammar-item"><span class="g-title">◆ 부정어 도치</span> ▶ <span class="g-example">Rarely do they talk</span> ★ <span class="g-point">부정어 Rarely가 문두에 오면 주어-동사 도치 (do+S+원형)</span></li>
+            <li class="grammar-item"><span class="g-title">◆ 동명사 목적어 병렬</span> ▶ <span class="g-example">scoring ... or achieving</span> ★ <span class="g-point">전치사 about의 목적어로 동명사 병렬</span></li>
+          </ul>
+        </div>
+
+        <!-- Sentence 4 -->
+        <div class="sent-block">
+          <div class="sent-number-badge">④</div>
+          <div class="sent-eng">It's all about process.</div>
+          <div class="sent-slash">
+            <span class="slash-en">It's all / about process.</span>
+            <span class="slash-ko">모든 것은 / 과정에 관한 것이다.</span>
+          </div>
+          <ul class="grammar-list">
+            <li class="grammar-item"><span class="g-title">◆ 숙어 It's all about ~</span> ▶ <span class="g-example">It's all about process.</span> ★ <span class="g-point">'~이 가장 중요하다'를 강조하는 관용 표현</span></li>
+          </ul>
+        </div>
+
+        <!-- Sentence 5 -->
+        <div class="sent-block">
+          <div class="sent-number-badge">⑤</div>
+          <div class="sent-eng">So, what do they mean by this?</div>
+          <div class="sent-slash">
+            <span class="slash-en">So, / what do they mean / by this?</span>
+            <span class="slash-ko">그렇다면 / 그들은 무엇을 의미하는가 / 이것으로?</span>
+          </div>
+          <ul class="grammar-list">
+            <li class="grammar-item"><span class="g-title">◆ 의문사 what 의문문</span> ▶ <span class="g-example">what do they mean</span> ★ <span class="g-point">의문사 + do + 주어 + 동사원형</span></li>
+            <li class="grammar-item"><span class="g-title">◆ mean by ~</span> ▶ <span class="g-example">mean by this</span> ★ <span class="g-point">'~으로 ...을 의미하다'의 숙어</span></li>
+          </ul>
+        </div>
+
+        <!-- Sentence 6 -->
+        <div class="sent-block">
+          <div class="sent-number-badge">⑥</div>
+          <div class="sent-eng">What they mean by focusing on the process is that they focus on the actions they need to take in order to achieve their desired result.</div>
+          <div class="sent-slash">
+            <span class="slash-en">What they mean by focusing on the process / is / that they focus on the actions / they need to take / in order to achieve their desired result.</span>
+            <span class="slash-ko">과정에 집중한다는 말의 의미는 / ~이다 / 그들이 행동에 집중한다는 것 / 그들이 취해야 하는 / 원하는 결과를 얻기 위해.</span>
+          </div>
+          <ul class="grammar-list">
+            <li class="grammar-item"><span class="g-title">◆ 관계대명사 what (주어절)</span> ▶ <span class="g-example">What they mean ... is</span> ★ <span class="g-point">선행사를 포함한 관계대명사, 단수 취급 → is</span></li>
+            <li class="grammar-item"><span class="g-title">◆ 명사절 접속사 that (보어)</span> ▶ <span class="g-example">is that they focus</span> ★ <span class="g-point">be동사의 보어 역할을 하는 that절</span></li>
+            <li class="grammar-item"><span class="g-title">◆ 목적격 관계대명사 생략</span> ▶ <span class="g-example">the actions (which/that) they need to take</span> ★ <span class="g-point">selection + S + V 구조, 관계대명사 생략</span></li>
+            <li class="grammar-item"><span class="g-title">◆ in order to V (목적)</span> ▶ <span class="g-example">in order to achieve</span> ★ <span class="g-point">'~하기 위해서'의 목적 부사구</span></li>
+          </ul>
+        </div>
+
+        <!-- Sentence 7 -->
+        <div class="sent-block">
+          <div class="sent-number-badge">⑦</div>
+          <div class="sent-eng">They don't focus on the result itself.</div>
+          <div class="sent-slash">
+            <span class="slash-en">They don't focus / on the result itself.</span>
+            <span class="slash-ko">그들은 집중하지 않는다 / 결과 그 자체에.</span>
+          </div>
+          <ul class="grammar-list">
+            <li class="grammar-item"><span class="g-title">◆ 재귀대명사 강조용법</span> ▶ <span class="g-example">the result itself</span> ★ <span class="g-point">명사 뒤에서 '그 자체'를 강조하는 재귀대명사</span></li>
+            <li class="grammar-item"><span class="g-title">◆ focus on ~</span> ▶ <span class="g-example">focus on the result</span> ★ <span class="g-point">'~에 집중하다'의 숙어</span></li>
+          </ul>
+        </div>
+
+        <!-- Sentence 8 -->
+        <div class="sent-block">
+          <div class="sent-number-badge">⑧</div>
+          <div class="sent-eng">The reasoning here is that if you follow the steps required, then the result will look after itself.</div>
+          <div class="sent-slash">
+            <span class="slash-en">The reasoning here is / that / if you follow the steps required, / then the result / will look after itself.</span>
+            <span class="slash-ko">여기에서의 논리는 ~이다 / 즉 / 만약 당신이 필요한 단계를 따르면 / 결과는 / 저절로 해결될 것이라는 것.</span>
+          </div>
+          <ul class="grammar-list">
+            <li class="grammar-item"><span class="g-title">◆ 명사절 that (보어)</span> ▶ <span class="g-example">is that if you follow</span> ★ <span class="g-point">be동사의 보어절, 접속사 that</span></li>
+            <li class="grammar-item"><span class="g-title">◆ 과거분사 후치수식</span> ▶ <span class="g-example">the steps required</span> ★ <span class="g-point">steps를 뒤에서 수식하는 과거분사 (요구되는 단계)</span></li>
+            <li class="grammar-item"><span class="g-title">◆ 조건절 if</span> ▶ <span class="g-example">if you follow ..., then the result will</span> ★ <span class="g-point">if + 현재시제 / then + 미래시제 (조건문)</span></li>
+            <li class="grammar-item"><span class="g-title">◆ 재귀대명사 관용구</span> ▶ <span class="g-example">look after itself</span> ★ <span class="g-point">'저절로 해결되다'의 관용 표현</span></li>
+          </ul>
+        </div>
+
+        <!-- Sentence 9 -->
+        <div class="sent-block">
+          <div class="sent-number-badge">⑨</div>
+          <div class="sent-eng">This is one of the big differences between professional and amateur sportspeople.</div>
+          <div class="sent-slash">
+            <span class="slash-en">This is one of the big differences / between professional and amateur sportspeople.</span>
+            <span class="slash-ko">이것이 큰 차이점 중 하나이다 / 프로와 아마추어 스포츠 선수들 사이의.</span>
+          </div>
+          <ul class="grammar-list">
+            <li class="grammar-item"><span class="g-title">◆ one of the + 복수명사</span> ▶ <span class="g-example">one of the big differences</span> ★ <span class="g-point">'~중 하나' 구조, 주어로 쓰일 때 단수 취급</span></li>
+            <li class="grammar-item"><span class="g-title">◆ between A and B</span> ▶ <span class="g-example">between professional and amateur</span> ★ <span class="g-point">'A와 B 사이의' 표현</span></li>
+          </ul>
+        </div>
+
+        <!-- Sentence 10 -->
+        <div class="sent-block">
+          <div class="sent-number-badge">⑩</div>
+          <div class="sent-eng">Amateurs often focus on the result and forget about doing all the things that would almost automatically lead to the result.</div>
+          <div class="sent-slash">
+            <span class="slash-en">Amateurs often focus on the result / and forget about doing all the things / that would almost automatically lead to the result.</span>
+            <span class="slash-ko">아마추어들은 흔히 결과에 집중한다 / 그리고 모든 일을 하는 것을 잊어버린다 / 거의 자동적으로 결과로 이어질.</span>
+          </div>
+          <ul class="grammar-list">
+            <li class="grammar-item"><span class="g-title">◆ forget about + 동명사</span> ▶ <span class="g-example">forget about doing</span> ★ <span class="g-point">전치사 about 뒤에 동명사 (현재/습관의 의미)</span></li>
+            <li class="grammar-item"><span class="g-title">◆ 관계대명사 that</span> ▶ <span class="g-example">the things that would ... lead</span> ★ <span class="g-point">things를 수식하는 주격 관계대명사</span></li>
+            <li class="grammar-item"><span class="g-title">◆ 조동사 would (예측/가정)</span> ▶ <span class="g-example">would ... lead to the result</span> ★ <span class="g-point">현재/일반적 가정에 대한 예측을 나타내는 would</span></li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Tab 3: 핵심단어 -->
+      <div class="tab-content" id="p2t3">
+        <ul class="vocab-list">
+          <li class="vocab-item"><span class="vocab-word">professional</span><span class="vocab-meaning">전문적인, 프로의</span><span class="vocab-pos">adj.</span><span class="vocab-deriv">profession (n.) 전문직</span></li>
+          <li class="vocab-item"><span class="vocab-word">unusual</span><span class="vocab-meaning">이례적인, 드문</span><span class="vocab-pos">adj.</span><span class="vocab-deriv">usual (adj.) 일상적인</span></li>
+          <li class="vocab-item"><span class="vocab-word">process</span><span class="vocab-meaning">과정</span><span class="vocab-pos">n.</span><span class="vocab-deriv">proceed (v.) 진행하다</span></li>
+          <li class="vocab-item"><span class="vocab-word">focus on</span><span class="vocab-meaning">~에 집중하다</span><span class="vocab-pos">phr.</span><span class="vocab-deriv">focused (adj.) 집중한</span></li>
+          <li class="vocab-item"><span class="vocab-word">rarely</span><span class="vocab-meaning">좀처럼 ~않는</span><span class="vocab-pos">adv.</span><span class="vocab-deriv">rare (adj.) 드문</span></li>
+          <li class="vocab-item"><span class="vocab-word">score</span><span class="vocab-meaning">득점하다</span><span class="vocab-pos">v.</span><span class="vocab-deriv">scorer (n.) 득점자</span></li>
+          <li class="vocab-item"><span class="vocab-word">achieve</span><span class="vocab-meaning">성취하다, 달성하다</span><span class="vocab-pos">v.</span><span class="vocab-deriv">achievement (n.) 성취</span></li>
+          <li class="vocab-item"><span class="vocab-word">desired</span><span class="vocab-meaning">원하는, 바라던</span><span class="vocab-pos">adj.</span><span class="vocab-deriv">desire (v.) 바라다</span></li>
+          <li class="vocab-item"><span class="vocab-word">result</span><span class="vocab-meaning">결과</span><span class="vocab-pos">n.</span><span class="vocab-deriv">resulting (adj.) 결과로 발생하는</span></li>
+          <li class="vocab-item"><span class="vocab-word">reasoning</span><span class="vocab-meaning">추론, 논리</span><span class="vocab-pos">n.</span><span class="vocab-deriv">reason (v.) 추론하다</span></li>
+          <li class="vocab-item"><span class="vocab-word">required</span><span class="vocab-meaning">필요한, 요구되는</span><span class="vocab-pos">adj.</span><span class="vocab-deriv">require (v.) 요구하다</span></li>
+          <li class="vocab-item"><span class="vocab-word">look after</span><span class="vocab-meaning">돌보다; 저절로 해결되다</span><span class="vocab-pos">phr.</span><span class="vocab-deriv">—</span></li>
+          <li class="vocab-item"><span class="vocab-word">difference</span><span class="vocab-meaning">차이점</span><span class="vocab-pos">n.</span><span class="vocab-deriv">different (adj.) 다른</span></li>
+          <li class="vocab-item"><span class="vocab-word">amateur</span><span class="vocab-meaning">아마추어</span><span class="vocab-pos">n.</span><span class="vocab-deriv">amateurish (adj.) 아마추어 같은</span></li>
+          <li class="vocab-item"><span class="vocab-word">automatically</span><span class="vocab-meaning">자동적으로, 저절로</span><span class="vocab-pos">adv.</span><span class="vocab-deriv">automatic (adj.) 자동의</span></li>
+        </ul>
+      </div>
+
+      <!-- Tab 4: 전문해석 -->
+      <div class="tab-content" id="p2t4">
+        <div class="translation">
+          요즘 프로 스포츠에서는 선수와 코치들이 과정에 대해 이야기하는 것을 듣는 것이 드물지 않다. 그들은 과정에 집중하고 과정을 따르는 것에 대해 이야기한다. 그들은 골이나 터치다운, 홈런, 득점, 또는 좋은 슛을 성공시키는 것에 대해서는 좀처럼 이야기하지 않는다. 모든 것이 과정에 관한 것이다. 그렇다면 이 말은 무슨 뜻일까? 과정에 집중한다는 것은, 자신이 원하는 결과를 얻기 위해 취해야 할 행동들에 집중한다는 의미이다. 그들은 결과 자체에 집중하지 않는다. 이러한 논리는, 필요한 단계를 잘 따르기만 하면 결과는 저절로 해결될 것이라는 생각이다. 이것이 프로 선수와 아마추어 선수의 큰 차이 중 하나이다. 아마추어는 흔히 결과에만 집중한 나머지, 그 결과로 거의 자동적으로 이어질 모든 행동들을 소홀히 한다.
+        </div>
+      </div>
+
+      <!-- Tab 5: 주제·요지 -->
+      <div class="tab-content" id="p2t5">
+        <div class="topic-section">
+          <div class="topic-label">주제</div>
+          <div class="topic-content">프로와 아마추어를 가르는 결정적 차이 — 결과가 아닌 과정에 집중하기</div>
+        </div>
+        <div class="topic-section">
+          <div class="topic-label">요지</div>
+          <div class="topic-content">프로 선수들은 결과 자체가 아니라, 원하는 결과에 도달하기 위해 필요한 행동과 과정에 집중하며, 이것이 아마추어와의 가장 큰 차이다.</div>
+        </div>
+        <div class="topic-section">
+          <div class="topic-label">구조 흐름</div>
+          <div class="structure-flow">
+            <div class="struct-step"><strong>① 도입:</strong> 프로들은 '과정'에 대해 이야기한다 (현상 제시)</div>
+            <div class="struct-step"><strong>② 질문:</strong> 그들이 말하는 '과정에 집중하기'란 무엇인가?</div>
+            <div class="struct-step"><strong>③ 설명:</strong> 원하는 결과에 도달하기 위한 행동에 집중 / 결과 자체는 저절로 따라온다</div>
+            <div class="struct-step"><strong>④ 결론:</strong> 결과에만 매달리는 아마추어와 프로의 결정적 차이</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tab 6: 변형문제 -->
+      <div class="tab-content" id="p2t6">
+        <!-- Q1: 주제추론 -->
+        <div class="quiz-block" id="p2q1">
+          <span class="quiz-num">문제 1. 주제 추론</span>
+          <div class="quiz-question">윗글의 주제로 가장 적절한 것은?</div>
+          <ul class="quiz-options">
+            <li class="quiz-option" onclick="checkAns('p2q1',this,false)"><span class="quiz-option-num">①</span>프로 스포츠 경기의 보상 체계</li>
+            <li class="quiz-option" onclick="checkAns('p2q1',this,true)"><span class="quiz-option-num">②</span>결과보다 과정에 집중하는 프로의 태도</li>
+            <li class="quiz-option" onclick="checkAns('p2q1',this,false)"><span class="quiz-option-num">③</span>스포츠 경기에서의 심리적 압박감</li>
+            <li class="quiz-option" onclick="checkAns('p2q1',this,false)"><span class="quiz-option-num">④</span>아마추어 선수들의 훈련 방법 개선</li>
+            <li class="quiz-option" onclick="checkAns('p2q1',this,false)"><span class="quiz-option-num">⑤</span>팀 스포츠에서의 의사소통의 중요성</li>
+          </ul>
+          <div class="quiz-feedback" id="fb-p2q1"></div>
+          <button class="quiz-reset" onclick="resetQuiz('p2q1')">다시 풀기</button>
+        </div>
+
+        <!-- Q2: 빈칸추론 -->
+        <div class="quiz-block" id="p2q2">
+          <span class="quiz-num">문제 2. 빈칸 추론</span>
+          <div class="quiz-question">다음 빈칸에 들어갈 말로 가장 적절한 것은?</div>
+          <div class="quiz-passage">The reasoning here is that if you follow the steps required, then <u>_____________</u>. This is one of the big differences between professional and amateur sportspeople.</div>
+          <ul class="quiz-options">
+            <li class="quiz-option" onclick="checkAns('p2q2',this,false)"><span class="quiz-option-num">①</span>you will beat your opponents easily</li>
+            <li class="quiz-option" onclick="checkAns('p2q2',this,true)"><span class="quiz-option-num">②</span>the result will look after itself</li>
+            <li class="quiz-option" onclick="checkAns('p2q2',this,false)"><span class="quiz-option-num">③</span>you will become famous in no time</li>
+            <li class="quiz-option" onclick="checkAns('p2q2',this,false)"><span class="quiz-option-num">④</span>the coach will reward your efforts</li>
+            <li class="quiz-option" onclick="checkAns('p2q2',this,false)"><span class="quiz-option-num">⑤</span>the game will end in your favor automatically</li>
+          </ul>
+          <div class="quiz-feedback" id="fb-p2q2"></div>
+          <button class="quiz-reset" onclick="resetQuiz('p2q2')">다시 풀기</button>
+        </div>
+
+        <!-- Q3: 어법 -->
+        <div class="quiz-block" id="p2q3">
+          <span class="quiz-num">문제 3. 어법 오류 찾기</span>
+          <div class="quiz-question">밑줄 친 ①~⑤ 중 어법상 <strong>틀린</strong> 것은?</div>
+          <div class="quiz-passage">In professional sports these days, it is not unusual to hear players and coaches <u>① talking</u> about process. Rarely <u>② they do</u> talk about scoring a goal, a touchdown, a home run, a point, or achieving a good shot. What they mean by focusing on the process is <u>③ that</u> they focus on the actions they need to take in order to achieve their desired result. The reasoning here is that if you follow the steps <u>④ required</u>, then the result will look after itself. Amateurs often focus on the result and forget about <u>⑤ doing</u> all the things that would almost automatically lead to the result.</div>
+          <ul class="quiz-options">
+            <li class="quiz-option" onclick="checkAns('p2q3',this,false)"><span class="quiz-option-num">①</span>talking — 지각동사 hear + O + 현재분사 (정상)</li>
+            <li class="quiz-option" onclick="checkAns('p2q3',this,true)"><span class="quiz-option-num">②</span>they do → do they (부정어 도치)</li>
+            <li class="quiz-option" onclick="checkAns('p2q3',this,false)"><span class="quiz-option-num">③</span>that — 보어절 접속사 (정상)</li>
+            <li class="quiz-option" onclick="checkAns('p2q3',this,false)"><span class="quiz-option-num">④</span>required — 과거분사 후치수식 (정상)</li>
+            <li class="quiz-option" onclick="checkAns('p2q3',this,false)"><span class="quiz-option-num">⑤</span>doing — 전치사 about + 동명사 (정상)</li>
+          </ul>
+          <div class="quiz-feedback" id="fb-p2q3"></div>
+          <button class="quiz-reset" onclick="resetQuiz('p2q3')">다시 풀기</button>
+        </div>
+
+        <!-- Q4: 내용불일치 -->
+        <div class="quiz-block" id="p2q4">
+          <span class="quiz-num">문제 4. 내용 불일치</span>
+          <div class="quiz-question">윗글의 내용과 일치하지 <strong>않는</strong> 것은?</div>
+          <ul class="quiz-options">
+            <li class="quiz-option" onclick="checkAns('p2q4',this,false)"><span class="quiz-option-num">①</span>요즘 프로 스포츠에서 선수와 코치들은 과정을 자주 언급한다.</li>
+            <li class="quiz-option" onclick="checkAns('p2q4',this,true)"><span class="quiz-option-num">②</span>프로 선수들은 득점과 같은 결과 자체에 가장 많이 집중한다.</li>
+            <li class="quiz-option" onclick="checkAns('p2q4',this,false)"><span class="quiz-option-num">③</span>프로들은 원하는 결과를 얻기 위한 행동에 집중한다.</li>
+            <li class="quiz-option" onclick="checkAns('p2q4',this,false)"><span class="quiz-option-num">④</span>필요한 단계를 따르면 결과는 저절로 따라온다는 것이 프로의 논리이다.</li>
+            <li class="quiz-option" onclick="checkAns('p2q4',this,false)"><span class="quiz-option-num">⑤</span>아마추어들은 결과에만 집중하여 결과로 이어질 행동들을 잊어버린다.</li>
+          </ul>
+          <div class="quiz-feedback" id="fb-p2q4"></div>
+          <button class="quiz-reset" onclick="resetQuiz('p2q4')">다시 풀기</button>
+        </div>
+
+        <!-- Essay 1 -->
+        <div class="essay-block">
+          <span class="essay-label">서술형 1</span>
+          <div class="essay-condition">[조건] 본문에서 찾아 빈칸을 완성하시오. 각 빈칸에는 한 단어씩 들어갑니다.</div>
+          <div class="essay-question">다음은 윗글의 요약문이다. 빈칸 (A)와 (B)에 들어갈 말을 본문에서 찾아 쓰시오.<br><br>→ Professional sportspeople focus on the (A) <u>__________</u> required to achieve their goal, while amateurs often focus on the (B) <u>__________</u> itself.</div>
+          <textarea class="essay-input" placeholder="(A) :&#10;(B) :"></textarea>
+          <button class="essay-toggle-btn" onclick="toggleAns(this)">모범답안 보기</button>
+          <div class="essay-answer">
+            <span class="essay-answer-label">▶ 모범답안</span>
+            (A) actions (또는 steps / process) &nbsp; / &nbsp; (B) result
+          </div>
+        </div>
+
+        <!-- Essay 2 -->
+        <div class="essay-block">
+          <span class="essay-label">서술형 2</span>
+          <div class="essay-condition">[조건] 완전한 영어 문장으로 답하시오. (30단어 내외)</div>
+          <div class="essay-question">According to the passage, what is the main difference between professional and amateur sportspeople?</div>
+          <textarea class="essay-input" placeholder="Write your answer here..."></textarea>
+          <button class="essay-toggle-btn" onclick="toggleAns(this)">모범답안 보기</button>
+          <div class="essay-answer">
+            <span class="essay-answer-label">▶ 모범답안</span>
+            Professionals focus on the actions and steps needed to achieve their desired result, while amateurs focus on the result itself and neglect the actions that would naturally lead to it. (about 30 words)
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ PASSAGE 3: Writing in Knowledge Era ============ -->
+    <section class="passage" id="p3">
+      <div class="passage-header">
+        <div class="passage-title">Passage 3. Writing in the Knowledge Era</div>
+        <div class="passage-subtitle">지식 경제 시대, 글쓰기 능력의 중요성</div>
+      </div>
+      <div class="tabs">
+        <button class="tab-btn active" onclick="showTab(3,1)">① 전문</button>
+        <button class="tab-btn" onclick="showTab(3,2)">② 문장분석</button>
+        <button class="tab-btn" onclick="showTab(3,3)">③ 핵심단어</button>
+        <button class="tab-btn" onclick="showTab(3,4)">④ 전문해석</button>
+        <button class="tab-btn" onclick="showTab(3,5)">⑤ 주제·요지</button>
+        <button class="tab-btn" onclick="showTab(3,6)">⑥ 변형문제</button>
+      </div>
+
+      <!-- Tab 1: 전문 -->
+      <div class="tab-content active" id="p3t1">
+        <div class="full-passage"><span class="sent-num">①</span> As globalization marches forward, the world gets smaller and smaller and collaboration technology gets better and better. <span class="sent-num">②</span> Yet only a handful of these advancements like international conference calls, IP phones, and video chats allow people to speak rather than to write. <span class="sent-num">③</span> Now, more information is exchanged via text than ever before, making it extremely important that you can communicate effectively in writing. <span class="sent-num">④</span> If you plan on participating in this knowledge economy, which grows more and more important with each passing day, you will need to learn how to write fairly well. <span class="sent-num">⑤</span> You don't have to be Shakespeare, but you do need to know how to express yourself properly in written form. <span class="sent-num">⑥</span> This is because not only is writing an important academic skill, but it is also an important skill that translates into any career field.</div>
+      </div>
+
+      <!-- Tab 2: 문장분석 -->
+      <div class="tab-content" id="p3t2">
+        <!-- Sentence 1 -->
+        <div class="sent-block">
+          <div class="sent-number-badge">①</div>
+          <div class="sent-eng">As globalization marches forward, the world gets smaller and smaller and collaboration technology gets better and better.</div>
+          <div class="sent-slash">
+            <span class="slash-en">As globalization marches forward, / the world gets smaller and smaller / and collaboration technology gets better and better.</span>
+            <span class="slash-ko">세계화가 진행됨에 따라 / 세상은 점점 더 작아지고 / 협업 기술은 점점 더 좋아진다.</span>
+          </div>
+          <ul class="grammar-list">
+            <li class="grammar-item"><span class="g-title">◆ 접속사 As (~함에 따라)</span> ▶ <span class="g-example">As globalization marches</span> ★ <span class="g-point">비례/동시 관계를 나타내는 접속사</span></li>
+            <li class="grammar-item"><span class="g-title">◆ 비교급 and 비교급</span> ▶ <span class="g-example">smaller and smaller, better and better</span> ★ <span class="g-point">'점점 더 ~한'의 점진적 변화 표현</span></li>
+            <li class="grammar-item"><span class="g-title">◆ get + 비교급 (변화)</span> ▶ <span class="g-example">gets smaller, gets better</span> ★ <span class="g-point">상태 변화를 나타내는 2형식 동사 get</span></li>
+          </ul>
+        </div>
+
+        <!-- Sentence 2 -->
+        <div class="sent-block">
+          <div class="sent-number-badge">②</div>
+          <div class="sent-eng">Yet only a handful of these advancements like international conference calls, IP phones, and video chats allow people to speak rather than to write.</div>
+          <div class="sent-slash">
+            <span class="slash-en">Yet / only a handful of these advancements / like international conference calls, IP phones, and video chats / allow people to speak / rather than to write.</span>
+            <span class="slash-ko">하지만 / 이러한 발전들 중 소수만이 / 예를 들어 국제 전화 회의, IP 전화, 영상 채팅과 같은 / 사람들이 말하도록 해준다 / 글쓰기보다는.</span>
+          </div>
+          <ul class="grammar-list">
+            <li class="grammar-item"><span class="g-title">◆ 5형식 allow + O + to부정사</span> ▶ <span class="g-example">allow people to speak</span> ★ <span class="g-point">'~가 …하도록 허락하다'의 5형식 구조</span></li>
+            <li class="grammar-item"><span class="g-title">◆ a handful of + 복수명사</span> ▶ <span class="g-example">a handful of these advancements</span> ★ <span class="g-point">'소수의 ~'을 의미</span></li>
+            <li class="grammar-item"><span class="g-title">◆ rather than</span> ▶ <span class="g-example">to speak rather than to write</span> ★ <span class="g-point">'~보다는 오히려'의 비교 표현, to부정사 병렬</span></li>
+          </ul>
+        </div>
+
+        <!-- Sentence 3 -->
+        <div class="sent-block">
+          <div class="sent-number-badge">③</div>
+          <div class="sent-eng">Now, more information is exchanged via text than ever before, making it extremely important that you can communicate effectively in writing.</div>
+          <div class="sent-slash">
+            <span class="slash-en">Now, / more information is exchanged / via text / than ever before, / making it extremely important / that you can communicate effectively in writing.</span>
+            <span class="slash-ko">이제 / 더 많은 정보가 교환된다 / 문자를 통해 / 이전 어느 때보다 / 그래서 매우 중요하게 만든다 / 당신이 글쓰기로 효과적으로 소통할 수 있는 것이.</span>
+          </div>
+          <ul class="grammar-list">
+            <li class="grammar-item"><span class="g-title">◆ 분사구문 (결과)</span> ▶ <span class="g-example">..., making it extremely important</span> ★ <span class="g-point">'그래서 ~하게 만든다'의 결과 분사구문</span></li>
+            <li class="grammar-item"><span class="g-title">◆ 가목적어 it ~ that절</span> ▶ <span class="g-example">making it important that you can</span> ★ <span class="g-point">it = 가목적어, that절 = 진목적어</span></li>
+            <li class="grammar-item"><span class="g-title">◆ than ever before (비교급 강조)</span> ▶ <span class="g-example">more ... than ever before</span> ★ <span class="g-point">'이전 어느 때보다 더 ~한'의 강조 표현</span></li>
+            <li class="grammar-item"><span class="g-title">◆ 수동태 be exchanged</span> ▶ <span class="g-example">is exchanged via text</span> ★ <span class="g-point">'~에 의해 교환되다'의 수동 표현</span></li>
+          </ul>
+        </div>
+
+        <!-- Sentence 4 -->
+        <div class="sent-block">
+          <div class="sent-number-badge">④</div>
+          <div class="sent-eng">If you plan on participating in this knowledge economy, which grows more and more important with each passing day, you will need to learn how to write fairly well.</div>
+          <div class="sent-slash">
+            <span class="slash-en">If you plan on participating / in this knowledge economy, / which grows more and more important / with each passing day, / you will need to learn / how to write fairly well.</span>
+            <span class="slash-ko">만약 당신이 참여하기를 계획한다면 / 이 지식 경제에 / 점점 더 중요해지는 / 하루가 지날수록 / 당신은 배워야 할 것이다 / 꽤 잘 쓰는 법을.</span>
+          </div>
+          <ul class="grammar-list">
+            <li class="grammar-item"><span class="g-title">◆ plan on + 동명사</span> ▶ <span class="g-example">plan on participating</span> ★ <span class="g-point">'~하기를 계획하다'의 구문, 전치사 on + 동명사</span></li>
+            <li class="grammar-item"><span class="g-title">◆ 계속적 용법 관계대명사 which</span> ▶ <span class="g-example">economy, which grows ...</span> ★ <span class="g-point">콤마 뒤 which, 선행사에 대한 부가 설명</span></li>
+            <li class="grammar-item"><span class="g-title">◆ how to V</span> ▶ <span class="g-example">how to write</span> ★ <span class="g-point">'~하는 방법'의 의문사 + to부정사</span></li>
+            <li class="grammar-item"><span class="g-title">◆ with each passing day</span> ▶ <span class="g-example">with each passing day</span> ★ <span class="g-point">'날이 갈수록'의 관용 표현</span></li>
+          </ul>
+        </div>
+
+        <!-- Sentence 5 -->
+        <div class="sent-block">
+          <div class="sent-number-badge">⑤</div>
+          <div class="sent-eng">You don't have to be Shakespeare, but you do need to know how to express yourself properly in written form.</div>
+          <div class="sent-slash">
+            <span class="slash-en">You don't have to be Shakespeare, / but you do need to know / how to express yourself properly / in written form.</span>
+            <span class="slash-ko">당신은 셰익스피어가 될 필요는 없다 / 하지만 당신은 반드시 알아야 한다 / 자신을 적절하게 표현하는 방법을 / 글 형식으로.</span>
+          </div>
+          <ul class="grammar-list">
+            <li class="grammar-item"><span class="g-title">◆ don't have to (불필요)</span> ▶ <span class="g-example">don't have to be</span> ★ <span class="g-point">'~할 필요가 없다' (금지가 아님에 주의)</span></li>
+            <li class="grammar-item"><span class="g-title">◆ do + 동사원형 (강조)</span> ▶ <span class="g-example">you do need to know</span> ★ <span class="g-point">일반동사를 강조하는 조동사 do</span></li>
+            <li class="grammar-item"><span class="g-title">◆ 재귀대명사 목적어</span> ▶ <span class="g-example">express yourself</span> ★ <span class="g-point">주어와 목적어가 같을 때 재귀대명사 사용</span></li>
+          </ul>
+        </div>
+
+        <!-- Sentence 6 -->
+        <div class="sent-block">
+          <div class="sent-number-badge">⑥</div>
+          <div class="sent-eng">This is because not only is writing an important academic skill, but it is also an important skill that translates into any career field.</div>
+          <div class="sent-slash">
+            <span class="slash-en">This is because / not only is writing an important academic skill, / but it is also an important skill / that translates into any career field.</span>
+            <span class="slash-ko">이것은 ~때문이다 / 글쓰기가 중요한 학문적 기술일 뿐만 아니라 / 또한 중요한 기술이기 때문에 / 어떤 직업 분야로든 전이되는.</span>
+          </div>
+          <ul class="grammar-list">
+            <li class="grammar-item"><span class="g-title">◆ not only A but also B (부정어 도치)</span> ▶ <span class="g-example">not only is writing ..., but it is also</span> ★ <span class="g-point">not only가 문두 → 주어-동사 도치 (is writing)</span></li>
+            <li class="grammar-item"><span class="g-title">◆ This is because ~</span> ▶ <span class="g-example">This is because not only ...</span> ★ <span class="g-point">'이것은 ~ 때문이다'의 이유 구문</span></li>
+            <li class="grammar-item"><span class="g-title">◆ 주격 관계대명사 that</span> ▶ <span class="g-example">skill that translates</span> ★ <span class="g-point">선행사 skill을 수식, 뒤에 동사 translates</span></li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Tab 3: 핵심단어 -->
+      <div class="tab-content" id="p3t3">
+        <ul class="vocab-list">
+          <li class="vocab-item"><span class="vocab-word">globalization</span><span class="vocab-meaning">세계화</span><span class="vocab-pos">n.</span><span class="vocab-deriv">global (adj.) 세계적인</span></li>
+          <li class="vocab-item"><span class="vocab-word">march forward</span><span class="vocab-meaning">앞으로 나아가다, 진행되다</span><span class="vocab-pos">phr.</span><span class="vocab-deriv">—</span></li>
+          <li class="vocab-item"><span class="vocab-word">collaboration</span><span class="vocab-meaning">협업, 협력</span><span class="vocab-pos">n.</span><span class="vocab-deriv">collaborate (v.) 협력하다</span></li>
+          <li class="vocab-item"><span class="vocab-word">a handful of</span><span class="vocab-meaning">소수의, 한 줌의</span><span class="vocab-pos">phr.</span><span class="vocab-deriv">—</span></li>
+          <li class="vocab-item"><span class="vocab-word">advancement</span><span class="vocab-meaning">진보, 발전</span><span class="vocab-pos">n.</span><span class="vocab-deriv">advance (v.) 진보하다</span></li>
+          <li class="vocab-item"><span class="vocab-word">exchange</span><span class="vocab-meaning">교환하다</span><span class="vocab-pos">v.</span><span class="vocab-deriv">exchange (n.) 교환</span></li>
+          <li class="vocab-item"><span class="vocab-word">via</span><span class="vocab-meaning">~을 통해</span><span class="vocab-pos">prep.</span><span class="vocab-deriv">—</span></li>
+          <li class="vocab-item"><span class="vocab-word">extremely</span><span class="vocab-meaning">매우, 극도로</span><span class="vocab-pos">adv.</span><span class="vocab-deriv">extreme (adj.) 극도의</span></li>
+          <li class="vocab-item"><span class="vocab-word">communicate</span><span class="vocab-meaning">의사소통하다</span><span class="vocab-pos">v.</span><span class="vocab-deriv">communication (n.) 의사소통</span></li>
+          <li class="vocab-item"><span class="vocab-word">effectively</span><span class="vocab-meaning">효과적으로</span><span class="vocab-pos">adv.</span><span class="vocab-deriv">effective (adj.) 효과적인</span></li>
+          <li class="vocab-item"><span class="vocab-word">participate in</span><span class="vocab-meaning">~에 참여하다</span><span class="vocab-pos">phr.</span><span class="vocab-deriv">participation (n.) 참여</span></li>
+          <li class="vocab-item"><span class="vocab-word">knowledge economy</span><span class="vocab-meaning">지식 경제</span><span class="vocab-pos">n.</span><span class="vocab-deriv">—</span></li>
+          <li class="vocab-item"><span class="vocab-word">properly</span><span class="vocab-meaning">적절하게, 올바르게</span><span class="vocab-pos">adv.</span><span class="vocab-deriv">proper (adj.) 적절한</span></li>
+          <li class="vocab-item"><span class="vocab-word">academic</span><span class="vocab-meaning">학문적인</span><span class="vocab-pos">adj.</span><span class="vocab-deriv">academy (n.) 학원, 학교</span></li>
+          <li class="vocab-item"><span class="vocab-word">translate into</span><span class="vocab-meaning">~로 전환되다, 적용되다</span><span class="vocab-pos">phr.</span><span class="vocab-deriv">translation (n.) 번역, 전환</span></li>
+        </ul>
+      </div>
+
+      <!-- Tab 4: 전문해석 -->
+      <div class="tab-content" id="p3t4">
+        <div class="translation">
+          세계화가 진행되면서 세상은 점점 더 작아지고 있고 협업 기술은 점점 더 좋아지고 있다. 그러나 국제 전화 회의, IP 전화, 영상 채팅과 같은 이러한 발전 중 단지 소수만이 사람들이 글을 쓰기보다는 말을 할 수 있게 해준다. 이제는 그 어느 때보다도 더 많은 정보가 문자를 통해 교환되고 있으며, 이는 글로 효과적으로 소통할 수 있는 능력을 극도로 중요하게 만든다. 날이 갈수록 더욱 중요해지는 이 지식 경제에 참여할 계획이라면, 당신은 꽤 잘 쓰는 법을 배워야 할 것이다. 셰익스피어가 될 필요는 없지만, 자신을 글로 적절히 표현하는 방법은 반드시 알아야 한다. 그 이유는, 글쓰기가 중요한 학문적 기술일 뿐만 아니라 어떤 직업 분야로든 이어지는 중요한 기술이기 때문이다.
+        </div>
+      </div>
+
+      <!-- Tab 5: 주제·요지 -->
+      <div class="tab-content" id="p3t5">
+        <div class="topic-section">
+          <div class="topic-label">주제</div>
+          <div class="topic-content">지식 경제 시대에 더욱 중요해진 글쓰기 능력</div>
+        </div>
+        <div class="topic-section">
+          <div class="topic-label">요지</div>
+          <div class="topic-content">세계화와 기술 발전에도 불구하고 정보는 대부분 문자로 교환되므로, 지식 경제 시대에 참여하려면 자신을 글로 적절히 표현하는 능력이 필수적이다.</div>
+        </div>
+        <div class="topic-section">
+          <div class="topic-label">구조 흐름</div>
+          <div class="structure-flow">
+            <div class="struct-step"><strong>① 도입:</strong> 세계화와 협업 기술의 발전 (배경)</div>
+            <div class="struct-step"><strong>② 전환:</strong> 그러나 여전히 대부분의 정보는 문자로 교환됨</div>
+            <div class="struct-step"><strong>③ 전개:</strong> 지식 경제에 참여하려면 글쓰기 능력이 필요</div>
+            <div class="struct-step"><strong>④ 결론:</strong> 글쓰기는 학문적 기술이자 어떤 직업에도 적용되는 핵심 기술</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tab 6: 변형문제 -->
+      <div class="tab-content" id="p3t6">
+        <!-- Q1: 주제추론 -->
+        <div class="quiz-block" id="p3q1">
+          <span class="quiz-num">문제 1. 주제 추론</span>
+          <div class="quiz-question">윗글의 주제로 가장 적절한 것은?</div>
+          <ul class="quiz-options">
+            <li class="quiz-option" onclick="checkAns('p3q1',this,false)"><span class="quiz-option-num">①</span>세계화가 불러온 언어 통일 현상</li>
+            <li class="quiz-option" onclick="checkAns('p3q1',this,false)"><span class="quiz-option-num">②</span>영상 회의 기술의 발달 과정</li>
+            <li class="quiz-option" onclick="checkAns('p3q1',this,true)"><span class="quiz-option-num">③</span>지식 경제 시대에 필수적인 글쓰기 능력</li>
+            <li class="quiz-option" onclick="checkAns('p3q1',this,false)"><span class="quiz-option-num">④</span>학문적 글쓰기와 문학적 글쓰기의 차이</li>
+            <li class="quiz-option" onclick="checkAns('p3q1',this,false)"><span class="quiz-option-num">⑤</span>국제 업무에서 영어 말하기의 중요성</li>
+          </ul>
+          <div class="quiz-feedback" id="fb-p3q1"></div>
+          <button class="quiz-reset" onclick="resetQuiz('p3q1')">다시 풀기</button>
+        </div>
+
+        <!-- Q2: 빈칸추론 -->
+        <div class="quiz-block" id="p3q2">
+          <span class="quiz-num">문제 2. 빈칸 추론</span>
+          <div class="quiz-question">다음 빈칸에 들어갈 말로 가장 적절한 것은?</div>
+          <div class="quiz-passage">Now, more information is exchanged via text than ever before, making it extremely important that you can <u>_____________</u>. If you plan on participating in this knowledge economy, you will need to learn how to write fairly well.</div>
+          <ul class="quiz-options">
+            <li class="quiz-option" onclick="checkAns('p3q2',this,false)"><span class="quiz-option-num">①</span>speak multiple foreign languages fluently</li>
+            <li class="quiz-option" onclick="checkAns('p3q2',this,false)"><span class="quiz-option-num">②</span>hold frequent international conference calls</li>
+            <li class="quiz-option" onclick="checkAns('p3q2',this,true)"><span class="quiz-option-num">③</span>communicate effectively in writing</li>
+            <li class="quiz-option" onclick="checkAns('p3q2',this,false)"><span class="quiz-option-num">④</span>master the latest video chat software</li>
+            <li class="quiz-option" onclick="checkAns('p3q2',this,false)"><span class="quiz-option-num">⑤</span>memorize classic literary works by heart</li>
+          </ul>
+          <div class="quiz-feedback" id="fb-p3q2"></div>
+          <button class="quiz-reset" onclick="resetQuiz('p3q2')">다시 풀기</button>
+        </div>
+
+        <!-- Q3: 어법 -->
+        <div class="quiz-block" id="p3q3">
+          <span class="quiz-num">문제 3. 어법 오류 찾기</span>
+          <div class="quiz-question">밑줄 친 ①~⑤ 중 어법상 <strong>틀린</strong> 것은?</div>
+          <div class="quiz-passage">Yet only a handful of these advancements like international conference calls, IP phones, and video chats allow people <u>① to speak</u> rather than to write. Now, more information <u>② is exchanged</u> via text than ever before, <u>③ making</u> it extremely important that you can communicate effectively in writing. If you plan on <u>④ participate</u> in this knowledge economy, which grows more and more important with each passing day, you will need to learn how to write fairly well. This is because not only <u>⑤ is writing</u> an important academic skill, but it is also an important skill that translates into any career field.</div>
+          <ul class="quiz-options">
+            <li class="quiz-option" onclick="checkAns('p3q3',this,false)"><span class="quiz-option-num">①</span>to speak — allow + O + to부정사 (정상)</li>
+            <li class="quiz-option" onclick="checkAns('p3q3',this,false)"><span class="quiz-option-num">②</span>is exchanged — 수동태 (정상)</li>
+            <li class="quiz-option" onclick="checkAns('p3q3',this,false)"><span class="quiz-option-num">③</span>making — 결과 분사구문 (정상)</li>
+            <li class="quiz-option" onclick="checkAns('p3q3',this,true)"><span class="quiz-option-num">④</span>participate → participating (전치사 on + 동명사)</li>
+            <li class="quiz-option" onclick="checkAns('p3q3',this,false)"><span class="quiz-option-num">⑤</span>is writing — not only 도치 (정상)</li>
+          </ul>
+          <div class="quiz-feedback" id="fb-p3q3"></div>
+          <button class="quiz-reset" onclick="resetQuiz('p3q3')">다시 풀기</button>
+        </div>
+
+        <!-- Q4: 내용불일치 -->
+        <div class="quiz-block" id="p3q4">
+          <span class="quiz-num">문제 4. 내용 불일치</span>
+          <div class="quiz-question">윗글의 내용과 일치하지 <strong>않는</strong> 것은?</div>
+          <ul class="quiz-options">
+            <li class="quiz-option" onclick="checkAns('p3q4',this,false)"><span class="quiz-option-num">①</span>세계화로 인해 세상은 점점 작아지고 협업 기술은 발전하고 있다.</li>
+            <li class="quiz-option" onclick="checkAns('p3q4',this,true)"><span class="quiz-option-num">②</span>대부분의 협업 기술은 말하기보다 글쓰기를 지원한다.</li>
+            <li class="quiz-option" onclick="checkAns('p3q4',this,false)"><span class="quiz-option-num">③</span>과거 어느 때보다 더 많은 정보가 문자로 교환된다.</li>
+            <li class="quiz-option" onclick="checkAns('p3q4',this,false)"><span class="quiz-option-num">④</span>셰익스피어 수준이 될 필요는 없지만 글로 자신을 표현할 줄 알아야 한다.</li>
+            <li class="quiz-option" onclick="checkAns('p3q4',this,false)"><span class="quiz-option-num">⑤</span>글쓰기는 학문적 기술이자 어떤 직업 분야에도 적용되는 기술이다.</li>
+          </ul>
+          <div class="quiz-feedback" id="fb-p3q4"></div>
+          <button class="quiz-reset" onclick="resetQuiz('p3q4')">다시 풀기</button>
+        </div>
+
+        <!-- Essay 1 -->
+        <div class="essay-block">
+          <span class="essay-label">서술형 1</span>
+          <div class="essay-condition">[조건] 본문에서 찾아 빈칸을 완성하시오. 각 빈칸에는 한 단어씩 들어갑니다.</div>
+          <div class="essay-question">다음은 윗글의 요약문이다. 빈칸 (A)와 (B)에 들어갈 말을 본문에서 찾아 쓰시오.<br><br>→ In today's (A) <u>__________</u> economy, being able to communicate in (B) <u>__________</u> is essential not only for academics but also for any career field.</div>
+          <textarea class="essay-input" placeholder="(A) :&#10;(B) :"></textarea>
+          <button class="essay-toggle-btn" onclick="toggleAns(this)">모범답안 보기</button>
+          <div class="essay-answer">
+            <span class="essay-answer-label">▶ 모범답안</span>
+            (A) knowledge &nbsp; / &nbsp; (B) writing
+          </div>
+        </div>
+
+        <!-- Essay 2 -->
+        <div class="essay-block">
+          <span class="essay-label">서술형 2</span>
+          <div class="essay-condition">[조건] 본문 내용을 바탕으로 완전한 영어 문장으로 답하시오. (30단어 내외)</div>
+          <div class="essay-question">Despite advancements in communication technology, why does the author believe writing skills are still extremely important?</div>
+          <textarea class="essay-input" placeholder="Write your answer here..."></textarea>
+          <button class="essay-toggle-btn" onclick="toggleAns(this)">모범답안 보기</button>
+          <div class="essay-answer">
+            <span class="essay-answer-label">▶ 모범답안</span>
+            Because more information than ever before is exchanged via text, and writing is not only an important academic skill but also a skill that translates into any career field. (about 30 words)
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ PASSAGE 4: Managers & Actions ============ -->
+    <section class="passage" id="p4">
+      <div class="passage-header">
+        <div class="passage-title">Passage 4. Managers &amp; Actions</div>
+        <div class="passage-subtitle">직원의 '사람'이 아닌 '행동'에 초점 맞추기</div>
+      </div>
+      <div class="tabs">
+        <button class="tab-btn active" onclick="showTab(4,1)">① 전문</button>
+        <button class="tab-btn" onclick="showTab(4,2)">② 문장분석</button>
+        <button class="tab-btn" onclick="showTab(4,3)">③ 핵심단어</button>
+        <button class="tab-btn" onclick="showTab(4,4)">④ 전문해석</button>
+        <button class="tab-btn" onclick="showTab(4,5)">⑤ 주제·요지</button>
+        <button class="tab-btn" onclick="showTab(4,6)">⑥ 변형문제</button>
+      </div>
+
+      <!-- Tab 1: 전문 -->
+      <div class="tab-content active" id="p4t1">
+        <div class="full-passage"><span class="sent-num">①</span> Managers frequently try to play psychologist, to "figure out" why an employee has acted in a certain way. <span class="sent-num">②</span> Empathizing with employees in order to understand their point of view can be very helpful. <span class="sent-num">③</span> However, when dealing with a problem area, in particular, remember that it is not the person who is bad, but the actions exhibited on the job. <span class="sent-num">④</span> Avoid making suggestions to employees about personal traits they should change; instead suggest more acceptable ways of performing. <span class="sent-num">⑤</span> For example, instead of focusing on a person's "unreliability," a manager might focus on the fact that the employee "has been late to work seven times this month." <span class="sent-num">⑥</span> It is difficult for employees to change who they are; it is usually much easier for them to change how they act.</div>
+      </div>
+
+      <!-- Tab 2: 문장분석 -->
+      <div class="tab-content" id="p4t2">
+        <!-- Sentence 1 -->
+        <div class="sent-block">
+          <div class="sent-number-badge">①</div>
+          <div class="sent-eng">Managers frequently try to play psychologist, to "figure out" why an employee has acted in a certain way.</div>
+          <div class="sent-slash">
+            <span class="slash-en">Managers frequently try to play psychologist, / to "figure out" / why an employee has acted in a certain way.</span>
+            <span class="slash-ko">관리자들은 종종 심리학자 역할을 하려고 한다 / '알아내려고' / 왜 직원이 특정한 방식으로 행동했는지를.</span>
+          </div>
+          <ul class="grammar-list">
+            <li class="grammar-item"><span class="g-title">◆ try to V</span> ▶ <span class="g-example">try to play psychologist</span> ★ <span class="g-point">'~하려고 노력하다' (try V-ing '시험삼아 해보다'와 구별)</span></li>
+            <li class="grammar-item"><span class="g-title">◆ 의문사절 (간접의문문)</span> ▶ <span class="g-example">why an employee has acted</span> ★ <span class="g-point">동사 figure out의 목적어, '의문사+S+V' 어순</span></li>
+            <li class="grammar-item"><span class="g-title">◆ to부정사 부사적 용법 (목적)</span> ▶ <span class="g-example">to figure out</span> ★ <span class="g-point">'~하기 위해서'의 목적 표현</span></li>
+          </ul>
+        </div>
+
+        <!-- Sentence 2 -->
+        <div class="sent-block">
+          <div class="sent-number-badge">②</div>
+          <div class="sent-eng">Empathizing with employees in order to understand their point of view can be very helpful.</div>
+          <div class="sent-slash">
+            <span class="slash-en">Empathizing with employees / in order to understand their point of view / can be very helpful.</span>
+            <span class="slash-ko">직원과 공감하는 것은 / 그들의 관점을 이해하기 위해 / 매우 유용할 수 있다.</span>
+          </div>
+          <ul class="grammar-list">
+            <li class="grammar-item"><span class="g-title">◆ 동명사 주어</span> ▶ <span class="g-example">Empathizing ... can be</span> ★ <span class="g-point">동명사구 주어, 단수 취급</span></li>
+            <li class="grammar-item"><span class="g-title">◆ in order to V (목적)</span> ▶ <span class="g-example">in order to understand</span> ★ <span class="g-point">'~하기 위하여'의 목적 부사구</span></li>
+            <li class="grammar-item"><span class="g-title">◆ empathize with ~</span> ▶ <span class="g-example">Empathizing with employees</span> ★ <span class="g-point">'~에 공감하다'의 자동사 + 전치사</span></li>
+          </ul>
+        </div>
+
+        <!-- Sentence 3 -->
+        <div class="sent-block">
+          <div class="sent-number-badge">③</div>
+          <div class="sent-eng">However, when dealing with a problem area, in particular, remember that it is not the person who is bad, but the actions exhibited on the job.</div>
+          <div class="sent-slash">
+            <span class="slash-en">However, / when dealing with a problem area, in particular, / remember that / it is not the person / who is bad, / but the actions exhibited on the job.</span>
+            <span class="slash-ko">하지만 / 문제 영역을 다룰 때, 특히 / 기억하라 / 그것은 사람이 아니라 / 나쁜 것은 / 업무상 보여진 행동이라는 것을.</span>
+          </div>
+          <ul class="grammar-list">
+            <li class="grammar-item"><span class="g-title">◆ It is ~ that 강조구문 변형</span> ▶ <span class="g-example">it is not the person who is bad, but the actions</span> ★ <span class="g-point">not A but B 강조 (나쁜 것은 사람이 아니라 행동)</span></li>
+            <li class="grammar-item"><span class="g-title">◆ 분사구문 when + V-ing</span> ▶ <span class="g-example">when dealing with</span> ★ <span class="g-point">when을 남긴 분사구문, '~할 때'</span></li>
+            <li class="grammar-item"><span class="g-title">◆ 과거분사 후치수식</span> ▶ <span class="g-example">the actions exhibited on the job</span> ★ <span class="g-point">actions를 수식하는 과거분사 (보여지는 행동)</span></li>
+            <li class="grammar-item"><span class="g-title">◆ 명령문 remember</span> ▶ <span class="g-example">remember that ...</span> ★ <span class="g-point">주어 you를 생략한 명령문 구조</span></li>
+          </ul>
+        </div>
+
+        <!-- Sentence 4 -->
+        <div class="sent-block">
+          <div class="sent-number-badge">④</div>
+          <div class="sent-eng">Avoid making suggestions to employees about personal traits they should change; instead suggest more acceptable ways of performing.</div>
+          <div class="sent-slash">
+            <span class="slash-en">Avoid making suggestions to employees / about personal traits / they should change; / instead suggest more acceptable ways of performing.</span>
+            <span class="slash-ko">직원에게 제안하는 것을 피하라 / 개인적 특성에 대해 / 그들이 바꿔야 한다고 / 대신 더 수용 가능한 수행 방식을 제안하라.</span>
+          </div>
+          <ul class="grammar-list">
+            <li class="grammar-item"><span class="g-title">◆ avoid + 동명사</span> ▶ <span class="g-example">Avoid making</span> ★ <span class="g-point">avoid는 목적어로 동명사만 취함 (to부정사 불가)</span></li>
+            <li class="grammar-item"><span class="g-title">◆ 목적격 관계대명사 생략</span> ▶ <span class="g-example">traits (that) they should change</span> ★ <span class="g-point">선행사 + S + V 구조, 관계대명사 생략</span></li>
+            <li class="grammar-item"><span class="g-title">◆ 명령문 병렬</span> ▶ <span class="g-example">Avoid ...; instead suggest ...</span> ★ <span class="g-point">두 명령문을 세미콜론과 instead로 연결</span></li>
+          </ul>
+        </div>
+
+        <!-- Sentence 5 -->
+        <div class="sent-block">
+          <div class="sent-number-badge">⑤</div>
+          <div class="sent-eng">For example, instead of focusing on a person's "unreliability," a manager might focus on the fact that the employee "has been late to work seven times this month."</div>
+          <div class="sent-slash">
+            <span class="slash-en">For example, / instead of focusing on a person's "unreliability," / a manager might focus / on the fact that / the employee "has been late to work seven times this month."</span>
+            <span class="slash-ko">예를 들어 / 한 사람의 '신뢰할 수 없음'에 초점을 맞추는 대신 / 관리자는 초점을 맞출 수 있다 / 다음 사실에 / '이 직원이 이번 달 7번이나 지각했다'는.</span>
+          </div>
+          <ul class="grammar-list">
+            <li class="grammar-item"><span class="g-title">◆ instead of + 동명사</span> ▶ <span class="g-example">instead of focusing</span> ★ <span class="g-point">전치사구 '~하는 대신에', 뒤에 동명사</span></li>
+            <li class="grammar-item"><span class="g-title">◆ 동격의 that</span> ▶ <span class="g-example">the fact that the employee has been late</span> ★ <span class="g-point">명사 fact의 구체적 내용을 설명하는 동격절</span></li>
+            <li class="grammar-item"><span class="g-title">◆ 현재완료 계속/경험</span> ▶ <span class="g-example">has been late ... this month</span> ★ <span class="g-point">이번 달 전체를 포함하는 시간 범위에서의 경험</span></li>
+          </ul>
+        </div>
+
+        <!-- Sentence 6 -->
+        <div class="sent-block">
+          <div class="sent-number-badge">⑥</div>
+          <div class="sent-eng">It is difficult for employees to change who they are; it is usually much easier for them to change how they act.</div>
+          <div class="sent-slash">
+            <span class="slash-en">It is difficult / for employees / to change who they are; / it is usually much easier / for them / to change how they act.</span>
+            <span class="slash-ko">어렵다 / 직원들이 / 자신이 누구인지를 바꾸는 것은 / 보통 훨씬 더 쉽다 / 그들에게 / 자신이 행동하는 방식을 바꾸는 것은.</span>
+          </div>
+          <ul class="grammar-list">
+            <li class="grammar-item"><span class="g-title">◆ 가주어-진주어 (for 의미상 주어)</span> ▶ <span class="g-example">It is difficult for employees to change</span> ★ <span class="g-point">It(가주어) ... for 목적격(의미상 주어) ... to V(진주어)</span></li>
+            <li class="grammar-item"><span class="g-title">◆ 비교급 강조 much</span> ▶ <span class="g-example">much easier</span> ★ <span class="g-point">비교급 앞에서 '훨씬'의 의미로 강조, much/far/even/still/a lot</span></li>
+            <li class="grammar-item"><span class="g-title">◆ 의문사절 (간접의문문)</span> ▶ <span class="g-example">who they are, how they act</span> ★ <span class="g-point">to change의 목적어로 쓰인 간접의문문</span></li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Tab 3: 핵심단어 -->
+      <div class="tab-content" id="p4t3">
+        <ul class="vocab-list">
+          <li class="vocab-item"><span class="vocab-word">frequently</span><span class="vocab-meaning">자주, 빈번히</span><span class="vocab-pos">adv.</span><span class="vocab-deriv">frequent (adj.) 빈번한</span></li>
+          <li class="vocab-item"><span class="vocab-word">figure out</span><span class="vocab-meaning">알아내다, 이해하다</span><span class="vocab-pos">phr.</span><span class="vocab-deriv">—</span></li>
+          <li class="vocab-item"><span class="vocab-word">employee</span><span class="vocab-meaning">직원, 고용인</span><span class="vocab-pos">n.</span><span class="vocab-deriv">employ (v.) 고용하다</span></li>
+          <li class="vocab-item"><span class="vocab-word">empathize with</span><span class="vocab-meaning">~에 공감하다</span><span class="vocab-pos">phr.</span><span class="vocab-deriv">empathy (n.) 공감</span></li>
+          <li class="vocab-item"><span class="vocab-word">point of view</span><span class="vocab-meaning">관점, 견해</span><span class="vocab-pos">n.</span><span class="vocab-deriv">—</span></li>
+          <li class="vocab-item"><span class="vocab-word">deal with</span><span class="vocab-meaning">~을 다루다, 처리하다</span><span class="vocab-pos">phr.</span><span class="vocab-deriv">—</span></li>
+          <li class="vocab-item"><span class="vocab-word">in particular</span><span class="vocab-meaning">특히</span><span class="vocab-pos">phr.</span><span class="vocab-deriv">—</span></li>
+          <li class="vocab-item"><span class="vocab-word">exhibit</span><span class="vocab-meaning">보이다, 드러내다</span><span class="vocab-pos">v.</span><span class="vocab-deriv">exhibition (n.) 전시</span></li>
+          <li class="vocab-item"><span class="vocab-word">suggestion</span><span class="vocab-meaning">제안</span><span class="vocab-pos">n.</span><span class="vocab-deriv">suggest (v.) 제안하다</span></li>
+          <li class="vocab-item"><span class="vocab-word">trait</span><span class="vocab-meaning">특성, 특징</span><span class="vocab-pos">n.</span><span class="vocab-deriv">—</span></li>
+          <li class="vocab-item"><span class="vocab-word">acceptable</span><span class="vocab-meaning">수용 가능한</span><span class="vocab-pos">adj.</span><span class="vocab-deriv">accept (v.) 받아들이다</span></li>
+          <li class="vocab-item"><span class="vocab-word">perform</span><span class="vocab-meaning">수행하다</span><span class="vocab-pos">v.</span><span class="vocab-deriv">performance (n.) 수행, 공연</span></li>
+          <li class="vocab-item"><span class="vocab-word">unreliability</span><span class="vocab-meaning">신뢰할 수 없음</span><span class="vocab-pos">n.</span><span class="vocab-deriv">unreliable (adj.) 신뢰할 수 없는</span></li>
+          <li class="vocab-item"><span class="vocab-word">late to work</span><span class="vocab-meaning">지각하는</span><span class="vocab-pos">phr.</span><span class="vocab-deriv">—</span></li>
+          <li class="vocab-item"><span class="vocab-word">psychologist</span><span class="vocab-meaning">심리학자</span><span class="vocab-pos">n.</span><span class="vocab-deriv">psychology (n.) 심리학</span></li>
+        </ul>
+      </div>
+
+      <!-- Tab 4: 전문해석 -->
+      <div class="tab-content" id="p4t4">
+        <div class="translation">
+          관리자들은 흔히 심리학자 행세를 하면서 직원이 왜 특정한 방식으로 행동했는지를 '알아내려고' 한다. 직원의 관점을 이해하기 위해 그들과 공감하는 것은 매우 도움이 될 수 있다. 그러나 특히 문제 영역을 다룰 때는, 나쁜 것은 그 사람이 아니라 업무에서 드러난 그의 행동이라는 점을 기억해야 한다. 직원이 바꾸어야 할 개인적 특성에 대해 제안하는 것은 피하고, 대신 더 수용 가능한 수행 방식을 제안하라. 예를 들어, 어떤 사람의 '신뢰할 수 없음'이라는 특성에 초점을 맞추는 대신, 관리자는 그 직원이 '이번 달에 7번 지각했다'는 사실에 초점을 맞출 수 있다. 직원이 자신이 어떤 사람인지를 바꾸기는 어렵지만, 자신이 어떻게 행동하는지를 바꾸는 것은 보통 훨씬 더 쉬운 일이다.
+        </div>
+      </div>
+
+      <!-- Tab 5: 주제·요지 -->
+      <div class="tab-content" id="p4t5">
+        <div class="topic-section">
+          <div class="topic-label">주제</div>
+          <div class="topic-content">직원 관리에서 '사람' 자체가 아닌 '행동'에 초점을 맞추는 방식</div>
+        </div>
+        <div class="topic-section">
+          <div class="topic-label">요지</div>
+          <div class="topic-content">관리자는 문제를 다룰 때 직원의 성격적 특성이 아닌 업무상 드러난 구체적 행동에 초점을 맞춰야 한다. 사람은 바꾸기 어렵지만, 행동은 바꾸기 쉽기 때문이다.</div>
+        </div>
+        <div class="topic-section">
+          <div class="topic-label">구조 흐름</div>
+          <div class="structure-flow">
+            <div class="struct-step"><strong>① 도입:</strong> 관리자들은 직원의 행동 이유를 심리학적으로 분석하려 함</div>
+            <div class="struct-step"><strong>② 전환:</strong> 공감은 유용하나, 문제 상황에서는 '사람'이 아닌 '행동'이 문제</div>
+            <div class="struct-step"><strong>③ 예시:</strong> '신뢰할 수 없음'(성격) 대신 '7번 지각'(행동)에 초점</div>
+            <div class="struct-step"><strong>④ 결론:</strong> 성격 변화는 어렵지만 행동 변화는 훨씬 쉬움</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tab 6: 변형문제 -->
+      <div class="tab-content" id="p4t6">
+        <!-- Q1: 주제추론 -->
+        <div class="quiz-block" id="p4q1">
+          <span class="quiz-num">문제 1. 주제 추론</span>
+          <div class="quiz-question">윗글의 주제로 가장 적절한 것은?</div>
+          <ul class="quiz-options">
+            <li class="quiz-option" onclick="checkAns('p4q1',this,false)"><span class="quiz-option-num">①</span>관리자가 갖추어야 할 심리학적 지식</li>
+            <li class="quiz-option" onclick="checkAns('p4q1',this,false)"><span class="quiz-option-num">②</span>직장 내 공감 능력의 부정적 영향</li>
+            <li class="quiz-option" onclick="checkAns('p4q1',this,true)"><span class="quiz-option-num">③</span>직원 관리에서 성격이 아닌 행동에 초점을 맞추는 방식</li>
+            <li class="quiz-option" onclick="checkAns('p4q1',this,false)"><span class="quiz-option-num">④</span>지각을 막기 위한 효과적인 근태 관리 전략</li>
+            <li class="quiz-option" onclick="checkAns('p4q1',this,false)"><span class="quiz-option-num">⑤</span>개인의 성격과 업무 성과 간의 상관관계</li>
+          </ul>
+          <div class="quiz-feedback" id="fb-p4q1"></div>
+          <button class="quiz-reset" onclick="resetQuiz('p4q1')">다시 풀기</button>
+        </div>
+
+        <!-- Q2: 빈칸추론 -->
+        <div class="quiz-block" id="p4q2">
+          <span class="quiz-num">문제 2. 빈칸 추론</span>
+          <div class="quiz-question">다음 빈칸에 들어갈 말로 가장 적절한 것은?</div>
+          <div class="quiz-passage">However, when dealing with a problem area, in particular, remember that it is not the person who is bad, but <u>_____________</u>. Avoid making suggestions to employees about personal traits they should change; instead suggest more acceptable ways of performing.</div>
+          <ul class="quiz-options">
+            <li class="quiz-option" onclick="checkAns('p4q2',this,false)"><span class="quiz-option-num">①</span>the company's strict rules</li>
+            <li class="quiz-option" onclick="checkAns('p4q2',this,true)"><span class="quiz-option-num">②</span>the actions exhibited on the job</li>
+            <li class="quiz-option" onclick="checkAns('p4q2',this,false)"><span class="quiz-option-num">③</span>the manager's unfair judgment</li>
+            <li class="quiz-option" onclick="checkAns('p4q2',this,false)"><span class="quiz-option-num">④</span>the coworker's hidden intentions</li>
+            <li class="quiz-option" onclick="checkAns('p4q2',this,false)"><span class="quiz-option-num">⑤</span>the employee's natural personality</li>
+          </ul>
+          <div class="quiz-feedback" id="fb-p4q2"></div>
+          <button class="quiz-reset" onclick="resetQuiz('p4q2')">다시 풀기</button>
+        </div>
+
+        <!-- Q3: 어법 -->
+        <div class="quiz-block" id="p4q3">
+          <span class="quiz-num">문제 3. 어법 오류 찾기</span>
+          <div class="quiz-question">밑줄 친 ①~⑤ 중 어법상 <strong>틀린</strong> 것은?</div>
+          <div class="quiz-passage">Managers frequently try <u>① to play</u> psychologist, to "figure out" why an employee has acted in a certain way. <u>② Empathizing</u> with employees in order to understand their point of view can be very helpful. However, when dealing with a problem area, in particular, remember that it is not the person who is bad, but the actions <u>③ exhibited</u> on the job. Avoid <u>④ to make</u> suggestions to employees about personal traits they should change; instead suggest more acceptable ways of performing. It is difficult for employees to change who they are; it is usually much <u>⑤ easier</u> for them to change how they act.</div>
+          <ul class="quiz-options">
+            <li class="quiz-option" onclick="checkAns('p4q3',this,false)"><span class="quiz-option-num">①</span>to play — try to V (정상)</li>
+            <li class="quiz-option" onclick="checkAns('p4q3',this,false)"><span class="quiz-option-num">②</span>Empathizing — 동명사 주어 (정상)</li>
+            <li class="quiz-option" onclick="checkAns('p4q3',this,false)"><span class="quiz-option-num">③</span>exhibited — 과거분사 후치수식 (정상)</li>
+            <li class="quiz-option" onclick="checkAns('p4q3',this,true)"><span class="quiz-option-num">④</span>to make → making (avoid + 동명사)</li>
+            <li class="quiz-option" onclick="checkAns('p4q3',this,false)"><span class="quiz-option-num">⑤</span>easier — 비교급 강조 much + 비교급 (정상)</li>
+          </ul>
+          <div class="quiz-feedback" id="fb-p4q3"></div>
+          <button class="quiz-reset" onclick="resetQuiz('p4q3')">다시 풀기</button>
+        </div>
+
+        <!-- Q4: 내용불일치 -->
+        <div class="quiz-block" id="p4q4">
+          <span class="quiz-num">문제 4. 내용 불일치</span>
+          <div class="quiz-question">윗글의 내용과 일치하지 <strong>않는</strong> 것은?</div>
+          <ul class="quiz-options">
+            <li class="quiz-option" onclick="checkAns('p4q4',this,false)"><span class="quiz-option-num">①</span>관리자들은 종종 직원의 행동 이유를 분석하려 한다.</li>
+            <li class="quiz-option" onclick="checkAns('p4q4',this,false)"><span class="quiz-option-num">②</span>직원의 관점을 이해하기 위한 공감은 도움이 될 수 있다.</li>
+            <li class="quiz-option" onclick="checkAns('p4q4',this,true)"><span class="quiz-option-num">③</span>문제 상황에서는 직원의 성격을 바꾸도록 조언하는 것이 효과적이다.</li>
+            <li class="quiz-option" onclick="checkAns('p4q4',this,false)"><span class="quiz-option-num">④</span>구체적 행동(예: 지각 횟수)에 초점을 맞추는 것이 바람직하다.</li>
+            <li class="quiz-option" onclick="checkAns('p4q4',this,false)"><span class="quiz-option-num">⑤</span>사람 자체보다 행동을 바꾸는 것이 더 쉽다.</li>
+          </ul>
+          <div class="quiz-feedback" id="fb-p4q4"></div>
+          <button class="quiz-reset" onclick="resetQuiz('p4q4')">다시 풀기</button>
+        </div>
+
+        <!-- Essay 1 -->
+        <div class="essay-block">
+          <span class="essay-label">서술형 1</span>
+          <div class="essay-condition">[조건] 본문에서 찾아 빈칸을 완성하시오. 각 빈칸에는 한 단어씩 들어갑니다.</div>
+          <div class="essay-question">다음은 윗글의 요약문이다. 빈칸 (A)와 (B)에 들어갈 말을 본문에서 찾아 쓰시오.<br><br>→ When managing a problem, focus not on the employee's personal (A) <u>__________</u>, but on the specific (B) <u>__________</u> shown on the job, since behavior is easier to change than personality.</div>
+          <textarea class="essay-input" placeholder="(A) :&#10;(B) :"></textarea>
+          <button class="essay-toggle-btn" onclick="toggleAns(this)">모범답안 보기</button>
+          <div class="essay-answer">
+            <span class="essay-answer-label">▶ 모범답안</span>
+            (A) traits &nbsp; / &nbsp; (B) actions
+          </div>
+        </div>
+
+        <!-- Essay 2 -->
+        <div class="essay-block">
+          <span class="essay-label">서술형 2</span>
+          <div class="essay-condition">[조건] 본문의 예시를 포함하여 완전한 영어 문장으로 답하시오. (35단어 내외)</div>
+          <div class="essay-question">What example does the author give to illustrate how managers should focus on actions rather than personal traits?</div>
+          <textarea class="essay-input" placeholder="Write your answer here..."></textarea>
+          <button class="essay-toggle-btn" onclick="toggleAns(this)">모범답안 보기</button>
+          <div class="essay-answer">
+            <span class="essay-answer-label">▶ 모범답안</span>
+            Instead of focusing on a person's "unreliability," a manager might focus on the fact that the employee "has been late to work seven times this month," pointing to a specific observable action. (about 32 words)
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ PASSAGE 5: Leaders & Followers ============ -->
+    <section class="passage" id="p5">
+      <div class="passage-header">
+        <div class="passage-title">Passage 5. Leaders &amp; Followers</div>
+        <div class="passage-subtitle">리더와 팔로워 — 유동적이고 상호적인 관계</div>
+      </div>
+      <div class="tabs">
+        <button class="tab-btn active" onclick="showTab(5,1)">① 전문</button>
+        <button class="tab-btn" onclick="showTab(5,2)">② 문장분석</button>
+        <button class="tab-btn" onclick="showTab(5,3)">③ 핵심단어</button>
+        <button class="tab-btn" onclick="showTab(5,4)">④ 전문해석</button>
+        <button class="tab-btn" onclick="showTab(5,5)">⑤ 주제·요지</button>
+        <button class="tab-btn" onclick="showTab(5,6)">⑥ 변형문제</button>
+      </div>
+
+      <!-- Tab 1: 전문 -->
+      <div class="tab-content active" id="p5t1">
+        <div class="full-passage"><span class="sent-num">①</span> Followers can be defined by their position as subordinates or by their behavior of going along with leaders' wishes. <span class="sent-num">②</span> But followers also have power to lead. <span class="sent-num">③</span> Followers empower leaders as well as vice versa. <span class="sent-num">④</span> This has led some leadership analysts like Ronald Heifetz to avoid using the word <em>followers</em> and refer to the others in a power relationship as "citizens" or "constituents." <span class="sent-num">⑤</span> Heifetz is correct that too simple a view of followers can produce misunderstanding. <span class="sent-num">⑥</span> In modern life, most people wind up being both leaders and followers, and the categories can become quite fluid. <span class="sent-num">⑦</span> Our behavior as followers changes as our objectives change. <span class="sent-num">⑧</span> If I trust your judgment in music more than my own, I may follow your lead on which concert we attend (even though you may be formally my subordinate in position). <span class="sent-num">⑨</span> But if I am an expert on fishing, you may follow my lead on where we fish, regardless of our formal positions or the fact that I followed your lead on concerts yesterday.</div>
+        <div class="source-note">* vice versa: 반대로, 거꾸로</div>
+      </div>
+
+      <!-- Tab 2: 문장분석 -->
+      <div class="tab-content" id="p5t2">
+        <!-- Sentence 1 -->
+        <div class="sent-block">
+          <div class="sent-number-badge">①</div>
+          <div class="sent-eng">Followers can be defined by their position as subordinates or by their behavior of going along with leaders' wishes.</div>
+          <div class="sent-slash">
+            <span class="slash-en">Followers can be defined / by their position as subordinates / or by their behavior / of going along with leaders' wishes.</span>
+            <span class="slash-ko">팔로워는 정의될 수 있다 / 부하라는 지위로 / 또는 그들의 행동으로 / 리더의 바람을 따르는.</span>
+          </div>
+          <ul class="grammar-list">
+            <li class="grammar-item"><span class="g-title">◆ 수동태 be defined</span> ▶ <span class="g-example">Followers can be defined</span> ★ <span class="g-point">'정의될 수 있다'의 조동사 + 수동태</span></li>
+            <li class="grammar-item"><span class="g-title">◆ 병렬구조 by A or by B</span> ▶ <span class="g-example">by their position ... or by their behavior</span> ★ <span class="g-point">전치사구 병렬 연결</span></li>
+            <li class="grammar-item"><span class="g-title">◆ go along with ~</span> ▶ <span class="g-example">going along with leaders' wishes</span> ★ <span class="g-point">'~에 따르다, 동조하다'의 숙어</span></li>
+          </ul>
+        </div>
+
+        <!-- Sentence 2 -->
+        <div class="sent-block">
+          <div class="sent-number-badge">②</div>
+          <div class="sent-eng">But followers also have power to lead.</div>
+          <div class="sent-slash">
+            <span class="slash-en">But followers / also have power / to lead.</span>
+            <span class="slash-ko">하지만 팔로워들도 / 또한 힘을 가진다 / 이끄는.</span>
+          </div>
+          <ul class="grammar-list">
+            <li class="grammar-item"><span class="g-title">◆ to부정사 형용사적 용법</span> ▶ <span class="g-example">power to lead</span> ★ <span class="g-point">명사 power를 수식하는 to부정사 (이끄는 힘)</span></li>
+            <li class="grammar-item"><span class="g-title">◆ 역접 But</span> ▶ <span class="g-example">But followers also</span> ★ <span class="g-point">앞 문장과의 대조를 나타내는 접속사</span></li>
+          </ul>
+        </div>
+
+        <!-- Sentence 3 -->
+        <div class="sent-block">
+          <div class="sent-number-badge">③</div>
+          <div class="sent-eng">Followers empower leaders as well as vice versa.</div>
+          <div class="sent-slash">
+            <span class="slash-en">Followers empower leaders / as well as vice versa.</span>
+            <span class="slash-ko">팔로워는 리더에게 힘을 준다 / 그 반대의 경우도 마찬가지로.</span>
+          </div>
+          <ul class="grammar-list">
+            <li class="grammar-item"><span class="g-title">◆ A as well as B</span> ▶ <span class="g-example">empower leaders as well as vice versa</span> ★ <span class="g-point">'B뿐 아니라 A도'의 병렬 표현 (여기서는 상호 관계 강조)</span></li>
+            <li class="grammar-item"><span class="g-title">◆ vice versa</span> ▶ <span class="g-example">vice versa</span> ★ <span class="g-point">라틴어 유래 부사, '반대로, 거꾸로'의 의미</span></li>
+          </ul>
+        </div>
+
+        <!-- Sentence 4 -->
+        <div class="sent-block">
+          <div class="sent-number-badge">④</div>
+          <div class="sent-eng">This has led some leadership analysts like Ronald Heifetz to avoid using the word followers and refer to the others in a power relationship as "citizens" or "constituents."</div>
+          <div class="sent-slash">
+            <span class="slash-en">This has led some leadership analysts / like Ronald Heifetz / to avoid using the word followers / and refer to the others / in a power relationship / as "citizens" or "constituents."</span>
+            <span class="slash-ko">이것은 몇몇 리더십 분석가들을 ~하게 했다 / Ronald Heifetz와 같은 / followers라는 단어 사용을 피하도록 / 그리고 다른 사람들을 지칭하도록 / 권력 관계 속의 / '시민' 또는 '구성원'이라고.</span>
+          </div>
+          <ul class="grammar-list">
+            <li class="grammar-item"><span class="g-title">◆ 5형식 lead + O + to V</span> ▶ <span class="g-example">led ... analysts ... to avoid</span> ★ <span class="g-point">'~가 …하게 하다'의 5형식 구조</span></li>
+            <li class="grammar-item"><span class="g-title">◆ avoid + 동명사</span> ▶ <span class="g-example">avoid using</span> ★ <span class="g-point">avoid는 목적어로 동명사만 취함</span></li>
+            <li class="grammar-item"><span class="g-title">◆ refer to A as B</span> ▶ <span class="g-example">refer to the others ... as "citizens"</span> ★ <span class="g-point">'A를 B라고 부르다'의 구문</span></li>
+            <li class="grammar-item"><span class="g-title">◆ to부정사 병렬</span> ▶ <span class="g-example">to avoid ... and refer</span> ★ <span class="g-point">to avoid와 (to) refer의 병렬 (뒤 to 생략)</span></li>
+          </ul>
+        </div>
+
+        <!-- Sentence 5 -->
+        <div class="sent-block">
+          <div class="sent-number-badge">⑤</div>
+          <div class="sent-eng">Heifetz is correct that too simple a view of followers can produce misunderstanding.</div>
+          <div class="sent-slash">
+            <span class="slash-en">Heifetz is correct / that too simple a view of followers / can produce misunderstanding.</span>
+            <span class="slash-ko">Heifetz는 옳다 / 팔로워에 대한 너무 단순한 견해가 / 오해를 만들어낼 수 있다는 점에서.</span>
+          </div>
+          <ul class="grammar-list">
+            <li class="grammar-item"><span class="g-title">◆ too + 형용사 + a/an + 명사</span> ▶ <span class="g-example">too simple a view</span> ★ <span class="g-point">too가 수식할 때 '형용사 + a + 명사' 어순이 됨</span></li>
+            <li class="grammar-item"><span class="g-title">◆ that절 (~라는 점에서)</span> ▶ <span class="g-example">is correct that ...</span> ★ <span class="g-point">형용사 correct의 근거를 설명하는 that절</span></li>
+          </ul>
+        </div>
+
+        <!-- Sentence 6 -->
+        <div class="sent-block">
+          <div class="sent-number-badge">⑥</div>
+          <div class="sent-eng">In modern life, most people wind up being both leaders and followers, and the categories can become quite fluid.</div>
+          <div class="sent-slash">
+            <span class="slash-en">In modern life, / most people wind up being / both leaders and followers, / and the categories / can become quite fluid.</span>
+            <span class="slash-ko">현대 생활에서 / 대부분의 사람은 결국 ~이 된다 / 리더이자 팔로워 둘 다 / 그리고 그 범주들은 / 꽤 유동적이 될 수 있다.</span>
+          </div>
+          <ul class="grammar-list">
+            <li class="grammar-item"><span class="g-title">◆ wind up + V-ing</span> ▶ <span class="g-example">wind up being</span> ★ <span class="g-point">'결국 ~하게 되다'의 숙어, 뒤에 동명사</span></li>
+            <li class="grammar-item"><span class="g-title">◆ both A and B</span> ▶ <span class="g-example">both leaders and followers</span> ★ <span class="g-point">'A와 B 둘 다'의 상관 접속사</span></li>
+            <li class="grammar-item"><span class="g-title">◆ 2형식 become + 형용사</span> ▶ <span class="g-example">become quite fluid</span> ★ <span class="g-point">상태 변화를 나타내는 2형식 동사</span></li>
+          </ul>
+        </div>
+
+        <!-- Sentence 7 -->
+        <div class="sent-block">
+          <div class="sent-number-badge">⑦</div>
+          <div class="sent-eng">Our behavior as followers changes as our objectives change.</div>
+          <div class="sent-slash">
+            <span class="slash-en">Our behavior as followers / changes / as our objectives change.</span>
+            <span class="slash-ko">팔로워로서의 우리의 행동은 / 변한다 / 우리의 목표가 변함에 따라.</span>
+          </div>
+          <ul class="grammar-list">
+            <li class="grammar-item"><span class="g-title">◆ 접속사 as (~함에 따라)</span> ▶ <span class="g-example">as our objectives change</span> ★ <span class="g-point">비례적 변화를 나타내는 접속사</span></li>
+            <li class="grammar-item"><span class="g-title">◆ 전치사 as (~로서)</span> ▶ <span class="g-example">behavior as followers</span> ★ <span class="g-point">자격/역할을 나타내는 전치사 as</span></li>
+          </ul>
+        </div>
+
+        <!-- Sentence 8 -->
+        <div class="sent-block">
+          <div class="sent-number-badge">⑧</div>
+          <div class="sent-eng">If I trust your judgment in music more than my own, I may follow your lead on which concert we attend (even though you may be formally my subordinate in position).</div>
+          <div class="sent-slash">
+            <span class="slash-en">If I trust your judgment in music / more than my own, / I may follow your lead / on which concert we attend / (even though you may be formally my subordinate in position).</span>
+            <span class="slash-ko">만약 내가 음악에 관한 당신의 판단을 신뢰한다면 / 내 자신의 것보다 더 / 나는 당신의 주도를 따를 수도 있다 / 우리가 어떤 콘서트에 갈지에 관해 / (비록 당신이 공식적으로 지위상 내 부하일 수도 있지만).</span>
+          </div>
+          <ul class="grammar-list">
+            <li class="grammar-item"><span class="g-title">◆ 조건절 If + 현재 / 주절 may V</span> ▶ <span class="g-example">If I trust ..., I may follow</span> ★ <span class="g-point">가능성 있는 조건 + 추측의 may</span></li>
+            <li class="grammar-item"><span class="g-title">◆ 소유대명사 my own</span> ▶ <span class="g-example">more than my own (= my own judgment)</span> ★ <span class="g-point">반복 명사 생략, '내 자신의 것'</span></li>
+            <li class="grammar-item"><span class="g-title">◆ 간접의문문</span> ▶ <span class="g-example">which concert we attend</span> ★ <span class="g-point">전치사 on의 목적어로 쓰인 의문사절</span></li>
+            <li class="grammar-item"><span class="g-title">◆ even though (양보)</span> ▶ <span class="g-example">even though you may be</span> ★ <span class="g-point">'비록 ~일지라도'의 양보 접속사</span></li>
+          </ul>
+        </div>
+
+        <!-- Sentence 9 -->
+        <div class="sent-block">
+          <div class="sent-number-badge">⑨</div>
+          <div class="sent-eng">But if I am an expert on fishing, you may follow my lead on where we fish, regardless of our formal positions or the fact that I followed your lead on concerts yesterday.</div>
+          <div class="sent-slash">
+            <span class="slash-en">But if I am an expert on fishing, / you may follow my lead / on where we fish, / regardless of our formal positions / or the fact / that I followed your lead on concerts yesterday.</span>
+            <span class="slash-ko">그러나 만약 내가 낚시 전문가라면 / 당신은 내 주도를 따를 수 있다 / 우리가 어디에서 낚시할지에 관해 / 우리의 공식적 지위와 상관없이 / 또는 다음 사실과 상관없이 / 어제 내가 콘서트에서 당신의 주도를 따랐다는.</span>
+          </div>
+          <ul class="grammar-list">
+            <li class="grammar-item"><span class="g-title">◆ regardless of ~</span> ▶ <span class="g-example">regardless of our formal positions</span> ★ <span class="g-point">'~에 상관없이'의 전치사구</span></li>
+            <li class="grammar-item"><span class="g-title">◆ 동격의 that</span> ▶ <span class="g-example">the fact that I followed</span> ★ <span class="g-point">명사 fact의 내용을 설명하는 동격 that절</span></li>
+            <li class="grammar-item"><span class="g-title">◆ 간접의문문</span> ▶ <span class="g-example">where we fish</span> ★ <span class="g-point">전치사 on의 목적어 역할</span></li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Tab 3: 핵심단어 -->
+      <div class="tab-content" id="p5t3">
+        <ul class="vocab-list">
+          <li class="vocab-item"><span class="vocab-word">follower</span><span class="vocab-meaning">팔로워, 추종자</span><span class="vocab-pos">n.</span><span class="vocab-deriv">follow (v.) 따르다</span></li>
+          <li class="vocab-item"><span class="vocab-word">define</span><span class="vocab-meaning">정의하다</span><span class="vocab-pos">v.</span><span class="vocab-deriv">definition (n.) 정의</span></li>
+          <li class="vocab-item"><span class="vocab-word">subordinate</span><span class="vocab-meaning">부하, 종속된 자</span><span class="vocab-pos">n./adj.</span><span class="vocab-deriv">—</span></li>
+          <li class="vocab-item"><span class="vocab-word">go along with</span><span class="vocab-meaning">~에 따르다, 동조하다</span><span class="vocab-pos">phr.</span><span class="vocab-deriv">—</span></li>
+          <li class="vocab-item"><span class="vocab-word">empower</span><span class="vocab-meaning">힘/권한을 주다</span><span class="vocab-pos">v.</span><span class="vocab-deriv">empowerment (n.) 권한 부여</span></li>
+          <li class="vocab-item"><span class="vocab-word">vice versa</span><span class="vocab-meaning">반대로, 거꾸로</span><span class="vocab-pos">adv.</span><span class="vocab-deriv">—</span></li>
+          <li class="vocab-item"><span class="vocab-word">analyst</span><span class="vocab-meaning">분석가</span><span class="vocab-pos">n.</span><span class="vocab-deriv">analyze (v.) 분석하다</span></li>
+          <li class="vocab-item"><span class="vocab-word">refer to A as B</span><span class="vocab-meaning">A를 B라고 부르다</span><span class="vocab-pos">phr.</span><span class="vocab-deriv">—</span></li>
+          <li class="vocab-item"><span class="vocab-word">constituent</span><span class="vocab-meaning">구성원, 유권자</span><span class="vocab-pos">n.</span><span class="vocab-deriv">constitute (v.) 구성하다</span></li>
+          <li class="vocab-item"><span class="vocab-word">misunderstanding</span><span class="vocab-meaning">오해</span><span class="vocab-pos">n.</span><span class="vocab-deriv">misunderstand (v.) 오해하다</span></li>
+          <li class="vocab-item"><span class="vocab-word">wind up</span><span class="vocab-meaning">결국 ~하게 되다</span><span class="vocab-pos">phr.</span><span class="vocab-deriv">—</span></li>
+          <li class="vocab-item"><span class="vocab-word">fluid</span><span class="vocab-meaning">유동적인</span><span class="vocab-pos">adj.</span><span class="vocab-deriv">fluidity (n.) 유동성</span></li>
+          <li class="vocab-item"><span class="vocab-word">objective</span><span class="vocab-meaning">목표, 목적</span><span class="vocab-pos">n.</span><span class="vocab-deriv">objective (adj.) 객관적인</span></li>
+          <li class="vocab-item"><span class="vocab-word">judgment</span><span class="vocab-meaning">판단</span><span class="vocab-pos">n.</span><span class="vocab-deriv">judge (v.) 판단하다</span></li>
+          <li class="vocab-item"><span class="vocab-word">regardless of</span><span class="vocab-meaning">~에 상관없이</span><span class="vocab-pos">phr.</span><span class="vocab-deriv">regard (v.) 여기다</span></li>
+        </ul>
+      </div>
+
+      <!-- Tab 4: 전문해석 -->
+      <div class="tab-content" id="p5t4">
+        <div class="translation">
+          팔로워는 부하라는 지위에 의해, 혹은 리더의 뜻에 따르는 행동에 의해 정의될 수 있다. 그러나 팔로워에게도 이끄는 힘이 있다. 팔로워는 리더에게 힘을 실어 주며, 그 반대도 마찬가지이다. 이러한 이유로 Ronald Heifetz와 같은 몇몇 리더십 분석가들은 '팔로워'라는 단어 사용을 피하고, 권력 관계 속의 다른 사람들을 '시민' 혹은 '구성원'이라고 부른다. Heifetz의 말처럼, 팔로워를 너무 단순하게 바라보는 시각은 오해를 낳을 수 있다. 현대 사회에서 대부분의 사람은 리더이자 동시에 팔로워가 되며, 이 두 범주의 경계는 꽤 유동적이 될 수 있다. 팔로워로서의 우리의 행동은 우리의 목표가 달라짐에 따라 함께 변한다. 예를 들어, 내가 음악에 대한 당신의 판단을 내 것보다 더 신뢰한다면, 공식적 지위로는 당신이 내 부하일지라도 어떤 콘서트에 갈지에 대해서는 내가 당신을 따를 수 있다. 반대로 내가 낚시 전문가라면, 우리의 공식적 지위나 어제 내가 콘서트에서 당신을 따랐다는 사실과 무관하게, 어디에서 낚시할지에 대해서는 당신이 내 주도를 따를 수 있다.
+        </div>
+      </div>
+
+      <!-- Tab 5: 주제·요지 -->
+      <div class="tab-content" id="p5t5">
+        <div class="topic-section">
+          <div class="topic-label">주제</div>
+          <div class="topic-content">리더와 팔로워의 유동적이고 상호적인 관계</div>
+        </div>
+        <div class="topic-section">
+          <div class="topic-label">요지</div>
+          <div class="topic-content">현대 사회에서 리더와 팔로워의 경계는 고정되어 있지 않고, 상황과 목표에 따라 유동적으로 바뀔 수 있는 상호 권력 관계다.</div>
+        </div>
+        <div class="topic-section">
+          <div class="topic-label">구조 흐름</div>
+          <div class="structure-flow">
+            <div class="struct-step"><strong>① 도입:</strong> 팔로워의 전통적 정의 (부하 / 리더의 뜻을 따르는 자)</div>
+            <div class="struct-step"><strong>② 반론:</strong> 팔로워도 이끄는 힘이 있고, 리더와 팔로워는 서로 힘을 준다</div>
+            <div class="struct-step"><strong>③ 전개:</strong> Heifetz — 단순한 팔로워 개념은 오해를 낳음 / 현대인은 양쪽 모두가 됨</div>
+            <div class="struct-step"><strong>④ 예시:</strong> 음악·낚시에서의 상황별 리더-팔로워 역할 전환</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tab 6: 변형문제 -->
+      <div class="tab-content" id="p5t6">
+        <!-- Q1: 주제추론 -->
+        <div class="quiz-block" id="p5q1">
+          <span class="quiz-num">문제 1. 주제 추론</span>
+          <div class="quiz-question">윗글의 주제로 가장 적절한 것은?</div>
+          <ul class="quiz-options">
+            <li class="quiz-option" onclick="checkAns('p5q1',this,false)"><span class="quiz-option-num">①</span>훌륭한 리더가 갖춰야 할 자질</li>
+            <li class="quiz-option" onclick="checkAns('p5q1',this,false)"><span class="quiz-option-num">②</span>조직 내 수직적 위계질서의 필요성</li>
+            <li class="quiz-option" onclick="checkAns('p5q1',this,true)"><span class="quiz-option-num">③</span>상황에 따라 유동적으로 바뀌는 리더와 팔로워의 관계</li>
+            <li class="quiz-option" onclick="checkAns('p5q1',this,false)"><span class="quiz-option-num">④</span>리더십 교육의 역사적 변천 과정</li>
+            <li class="quiz-option" onclick="checkAns('p5q1',this,false)"><span class="quiz-option-num">⑤</span>민주 사회에서 시민 참여의 중요성</li>
+          </ul>
+          <div class="quiz-feedback" id="fb-p5q1"></div>
+          <button class="quiz-reset" onclick="resetQuiz('p5q1')">다시 풀기</button>
+        </div>
+
+        <!-- Q2: 빈칸추론 -->
+        <div class="quiz-block" id="p5q2">
+          <span class="quiz-num">문제 2. 빈칸 추론</span>
+          <div class="quiz-question">다음 빈칸에 들어갈 말로 가장 적절한 것은?</div>
+          <div class="quiz-passage">In modern life, most people wind up being both leaders and followers, and the categories can become quite <u>_____________</u>. Our behavior as followers changes as our objectives change.</div>
+          <ul class="quiz-options">
+            <li class="quiz-option" onclick="checkAns('p5q2',this,false)"><span class="quiz-option-num">①</span>fixed</li>
+            <li class="quiz-option" onclick="checkAns('p5q2',this,false)"><span class="quiz-option-num">②</span>hierarchical</li>
+            <li class="quiz-option" onclick="checkAns('p5q2',this,false)"><span class="quiz-option-num">③</span>permanent</li>
+            <li class="quiz-option" onclick="checkAns('p5q2',this,true)"><span class="quiz-option-num">④</span>fluid</li>
+            <li class="quiz-option" onclick="checkAns('p5q2',this,false)"><span class="quiz-option-num">⑤</span>meaningless</li>
+          </ul>
+          <div class="quiz-feedback" id="fb-p5q2"></div>
+          <button class="quiz-reset" onclick="resetQuiz('p5q2')">다시 풀기</button>
+        </div>
+
+        <!-- Q3: 어법 -->
+        <div class="quiz-block" id="p5q3">
+          <span class="quiz-num">문제 3. 어법 오류 찾기</span>
+          <div class="quiz-question">밑줄 친 ①~⑤ 중 어법상 <strong>틀린</strong> 것은?</div>
+          <div class="quiz-passage">Followers can <u>① be defined</u> by their position as subordinates or by their behavior of going along with leaders' wishes. This has led some leadership analysts like Ronald Heifetz to avoid <u>② to use</u> the word followers and refer to the others in a power relationship as "citizens" or "constituents." In modern life, most people wind up <u>③ being</u> both leaders and followers, and the categories can become quite fluid. Our behavior as followers changes as our objectives <u>④ change</u>. If I trust your judgment in music more than my own, I may follow your lead on <u>⑤ which</u> concert we attend.</div>
+          <ul class="quiz-options">
+            <li class="quiz-option" onclick="checkAns('p5q3',this,false)"><span class="quiz-option-num">①</span>be defined — 조동사+수동태 (정상)</li>
+            <li class="quiz-option" onclick="checkAns('p5q3',this,true)"><span class="quiz-option-num">②</span>to use → using (avoid + 동명사)</li>
+            <li class="quiz-option" onclick="checkAns('p5q3',this,false)"><span class="quiz-option-num">③</span>being — wind up + 동명사 (정상)</li>
+            <li class="quiz-option" onclick="checkAns('p5q3',this,false)"><span class="quiz-option-num">④</span>change — 접속사 as 뒤의 주어+동사 (정상)</li>
+            <li class="quiz-option" onclick="checkAns('p5q3',this,false)"><span class="quiz-option-num">⑤</span>which — 간접의문문 의문사 (정상)</li>
+          </ul>
+          <div class="quiz-feedback" id="fb-p5q3"></div>
+          <button class="quiz-reset" onclick="resetQuiz('p5q3')">다시 풀기</button>
+        </div>
+
+        <!-- Q4: 내용불일치 -->
+        <div class="quiz-block" id="p5q4">
+          <span class="quiz-num">문제 4. 내용 불일치</span>
+          <div class="quiz-question">윗글의 내용과 일치하지 <strong>않는</strong> 것은?</div>
+          <ul class="quiz-options">
+            <li class="quiz-option" onclick="checkAns('p5q4',this,false)"><span class="quiz-option-num">①</span>팔로워는 부하의 지위나 리더를 따르는 행동으로 정의될 수 있다.</li>
+            <li class="quiz-option" onclick="checkAns('p5q4',this,false)"><span class="quiz-option-num">②</span>팔로워도 리더를 이끄는 힘을 가지며, 리더와 팔로워는 서로 힘을 준다.</li>
+            <li class="quiz-option" onclick="checkAns('p5q4',this,false)"><span class="quiz-option-num">③</span>Ronald Heifetz는 followers 대신 citizens/constituents라는 용어를 선호한다.</li>
+            <li class="quiz-option" onclick="checkAns('p5q4',this,true)"><span class="quiz-option-num">④</span>현대 사회에서 리더와 팔로워의 범주는 엄격히 고정되어 있다.</li>
+            <li class="quiz-option" onclick="checkAns('p5q4',this,false)"><span class="quiz-option-num">⑤</span>상황에 따라 공식적 지위에 관계없이 리더-팔로워 역할이 바뀔 수 있다.</li>
+          </ul>
+          <div class="quiz-feedback" id="fb-p5q4"></div>
+          <button class="quiz-reset" onclick="resetQuiz('p5q4')">다시 풀기</button>
+        </div>
+
+        <!-- Essay 1 -->
+        <div class="essay-block">
+          <span class="essay-label">서술형 1</span>
+          <div class="essay-condition">[조건] 본문에서 찾아 빈칸을 완성하시오. 각 빈칸에는 한 단어씩 들어갑니다.</div>
+          <div class="essay-question">다음은 윗글의 요약문이다. 빈칸 (A)와 (B)에 들어갈 말을 본문에서 찾아 쓰시오.<br><br>→ In modern life, the categories of leaders and followers are quite (A) <u>__________</u>, and our behavior as followers shifts as our (B) <u>__________</u> change.</div>
+          <textarea class="essay-input" placeholder="(A) :&#10;(B) :"></textarea>
+          <button class="essay-toggle-btn" onclick="toggleAns(this)">모범답안 보기</button>
+          <div class="essay-answer">
+            <span class="essay-answer-label">▶ 모범답안</span>
+            (A) fluid &nbsp; / &nbsp; (B) objectives
+          </div>
+        </div>
+
+        <!-- Essay 2 -->
+        <div class="essay-block">
+          <span class="essay-label">서술형 2</span>
+          <div class="essay-condition">[조건] 본문의 예시를 활용하여 완전한 영어 문장으로 답하시오. (40단어 내외)</div>
+          <div class="essay-question">Using the music and fishing examples from the passage, explain how the roles of leader and follower can shift between two people.</div>
+          <textarea class="essay-input" placeholder="Write your answer here..."></textarea>
+          <button class="essay-toggle-btn" onclick="toggleAns(this)">모범답안 보기</button>
+          <div class="essay-answer">
+            <span class="essay-answer-label">▶ 모범답안</span>
+            If I trust your musical judgment, I may follow your lead on choosing a concert, even if you are my formal subordinate. But if I am a fishing expert, you may follow my lead on where to fish. (about 38 words)
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ PASSAGE 6: Stay Relevant ============ -->
+    <section class="passage" id="p6">
+      <div class="passage-header">
+        <div class="passage-title">Passage 6. Stay Relevant</div>
+        <div class="passage-subtitle">브랜드와 개인 — 변화에 적응하고 시대와 함께 성장하라</div>
+      </div>
+      <div class="tabs">
+        <button class="tab-btn active" onclick="showTab(6,1)">① 전문</button>
+        <button class="tab-btn" onclick="showTab(6,2)">② 문장분석</button>
+        <button class="tab-btn" onclick="showTab(6,3)">③ 핵심단어</button>
+        <button class="tab-btn" onclick="showTab(6,4)">④ 전문해석</button>
+        <button class="tab-btn" onclick="showTab(6,5)">⑤ 주제·요지</button>
+        <button class="tab-btn" onclick="showTab(6,6)">⑥ 변형문제</button>
+      </div>
+
+      <!-- Tab 1: 전문 -->
+      <div class="tab-content active" id="p6t1">
+        <div class="full-passage"><span class="sent-num">①</span> Brands that fail to grow and develop lose their relevance. <span class="sent-num">②</span> Think about the person you knew who was once on the fast track at your company who is either no longer with the firm or, worse yet, <strong>(A) appears</strong> to have hit a plateau in his or her career. <span class="sent-num">③</span> Assuming he or she did not make an ambitious move, more often than not, this individual is a victim of having failed to stay relevant and embrace the advances in his or her industry. <span class="sent-num">④</span> Think about the impact personal computing technology had on the first wave of executive leadership <strong>(B) exposed</strong> to the technology. <span class="sent-num">⑤</span> Those who embraced the technology were able to integrate it into their work styles and excel. <span class="sent-num">⑥</span> Those who were resistant many times found few opportunities <strong>(C) to advance</strong> their careers and in many cases were ultimately let go through early retirement for failure to stay relevant and update their skills.</div>
+        <div class="source-note">* hit a plateau: 정체기에 들다</div>
+      </div>
+
+      <!-- Tab 2: 문장분석 -->
+      <div class="tab-content" id="p6t2">
+        <!-- Sentence 1 -->
+        <div class="sent-block">
+          <div class="sent-number-badge">①</div>
+          <div class="sent-eng">Brands that fail to grow and develop lose their relevance.</div>
+          <div class="sent-slash">
+            <span class="slash-en">Brands / that fail to grow and develop / lose their relevance.</span>
+            <span class="slash-ko">브랜드는 / 성장하고 발전하지 못하는 / 그 관련성(적합성)을 잃는다.</span>
+          </div>
+          <ul class="grammar-list">
+            <li>◆ 주격 관계대명사 that: <em>that fail to grow and develop</em>이 선행사 <em>Brands</em>를 수식 ▶ 복수 선행사 → 관계절 동사 fail(복수형)</li>
+            <li>◆ fail to + 동사원형: "~하지 못하다" ▶ <em>fail to grow and develop</em></li>
+            <li>★ 출제포인트: 주어(Brands)와 본동사(lose)의 수 일치 — 관계절이 주어를 수식해도 본동사는 주어 Brands에 맞춰 복수형 <em>lose</em></li>
+          </ul>
+        </div>
+
+        <!-- Sentence 2 -->
+        <div class="sent-block">
+          <div class="sent-number-badge">②</div>
+          <div class="sent-eng">Think about the person you knew who was once on the fast track at your company who is either no longer with the firm or, worse yet, <strong style="color:#c8a84b">(A) appears</strong> to have hit a plateau in his or her career.</div>
+          <div class="sent-slash">
+            <span class="slash-en">Think about the person / (whom) you knew / who was once on the fast track at your company / who is either no longer with the firm / or, worse yet, appears to have hit a plateau / in his or her career.</span>
+            <span class="slash-ko">그 사람에 대해 생각해 보라 / 네가 알던 / 한때 너의 회사에서 출세 가도에 있던 / 이제 그 회사에 더 이상 있지 않거나 / 아니면, 더 심한 경우, 정체기에 든 것처럼 보이는 / 자신의 경력에서.</span>
+          </div>
+          <ul class="grammar-list">
+            <li>◆ 목적격 관계대명사 생략: <em>the person (whom) you knew</em> — 선행사 뒤에서 목적격 관계대명사가 생략됨</li>
+            <li>◆ 주격 관계대명사 who의 연속 수식: <em>who was once on the fast track ... who is either no longer with the firm or ... appears ...</em> — 두 관계절이 모두 선행사 <em>the person</em>을 수식</li>
+            <li>★ 【(A) 어법 핵심】 주어-동사 수 일치: 선행사 <em>the person</em>(단수)을 받는 관계절 속 동사는 단수형 <em>appears</em>가 정답. appear(복수)는 오답</li>
+            <li>◆ either A or B 구문: <em>either no longer with the firm or ... appears to have hit ...</em> — 두 상태가 병렬로 연결됨</li>
+            <li>◆ have + p.p. (완료부정사): <em>to have hit a plateau</em> — 본동사 appears보다 이전 시점을 나타냄</li>
+          </ul>
+        </div>
+
+        <!-- Sentence 3 -->
+        <div class="sent-block">
+          <div class="sent-number-badge">③</div>
+          <div class="sent-eng">Assuming he or she did not make an ambitious move, more often than not, this individual is a victim of having failed to stay relevant and embrace the advances in his or her industry.</div>
+          <div class="sent-slash">
+            <span class="slash-en">Assuming / he or she did not make an ambitious move, / more often than not, / this individual is a victim / of having failed to stay relevant / and embrace the advances / in his or her industry.</span>
+            <span class="slash-ko">가정하면 / 그 사람이 야심찬 이직(움직임)을 하지 않았다고 / 십중팔구 / 이 개인은 희생자이다 / 관련성을 유지하지 못한 (것의) / 그리고 발전을 받아들이지 못한 (것의) / 자기 업계의.</span>
+          </div>
+          <ul class="grammar-list">
+            <li>◆ 분사구문(조건): <em>Assuming (that) ...</em> = "~라고 가정하면" — 생략된 접속사 that이 이끄는 명사절을 목적어로 취함</li>
+            <li>◆ 관용 표현: <em>more often than not</em> = "대개, 십중팔구"</li>
+            <li>◆ 완료 동명사 수동: <em>of having failed to ...</em> — 전치사 of의 목적어로 본동사보다 이전 시점의 "실패한 것"을 나타냄</li>
+            <li>★ 출제포인트: <em>having failed to stay relevant and (to) embrace</em> — to부정사 두 개가 and로 병렬 연결됨 (두 번째 to 생략)</li>
+          </ul>
+        </div>
+
+        <!-- Sentence 4 -->
+        <div class="sent-block">
+          <div class="sent-number-badge">④</div>
+          <div class="sent-eng">Think about the impact personal computing technology had on the first wave of executive leadership <strong style="color:#c8a84b">(B) exposed</strong> to the technology.</div>
+          <div class="sent-slash">
+            <span class="slash-en">Think about the impact / (that) personal computing technology had / on the first wave of executive leadership / exposed to the technology.</span>
+            <span class="slash-ko">그 영향에 대해 생각해 보라 / 개인용 컴퓨터 기술이 미쳤던 / 경영진 리더십의 첫 번째 물결에게 / 그 기술에 노출된.</span>
+          </div>
+          <ul class="grammar-list">
+            <li>◆ 목적격 관계대명사 생략: <em>the impact (that) personal computing technology had</em> — 선행사 the impact 뒤의 that이 생략됨</li>
+            <li>◆ have an impact on ~ : "~에 영향을 미치다" — 숙어 구조</li>
+            <li>★ 【(B) 어법 핵심】 과거분사의 수동 수식: <em>executive leadership (who was) exposed to the technology</em> — 경영진이 기술에 '노출된' 수동 의미 → <em>exposed</em>가 정답. exposing(능동)은 오답</li>
+            <li>◆ 분사의 후치 수식: <em>executive leadership exposed to ...</em> — 명사 뒤에서 분사구가 수식 (관계대명사+be동사 생략 구조)</li>
+          </ul>
+        </div>
+
+        <!-- Sentence 5 -->
+        <div class="sent-block">
+          <div class="sent-number-badge">⑤</div>
+          <div class="sent-eng">Those who embraced the technology were able to integrate it into their work styles and excel.</div>
+          <div class="sent-slash">
+            <span class="slash-en">Those / who embraced the technology / were able to integrate it / into their work styles / and excel.</span>
+            <span class="slash-ko">그들은 / 그 기술을 받아들였던 / 그것을 통합할 수 있었다 / 자신의 업무 방식에 / 그리고 뛰어날(탁월할) 수 있었다.</span>
+          </div>
+          <ul class="grammar-list">
+            <li>◆ those who ~ : "~한 사람들" — 선행사 those를 주격 관계대명사 who가 수식</li>
+            <li>◆ be able to + 동사원형: "~할 수 있다" — <em>were able to integrate ... and (to) excel</em></li>
+            <li>★ 출제포인트: <em>integrate it into their work styles and excel</em> — 조동사 were able to 뒤 to부정사(integrate)와 excel이 병렬 (두 번째 to 생략)</li>
+            <li>◆ integrate A into B: "A를 B에 통합하다"</li>
+          </ul>
+        </div>
+
+        <!-- Sentence 6 -->
+        <div class="sent-block">
+          <div class="sent-number-badge">⑥</div>
+          <div class="sent-eng">Those who were resistant many times found few opportunities <strong style="color:#c8a84b">(C) to advance</strong> their careers and in many cases were ultimately let go through early retirement for failure to stay relevant and update their skills.</div>
+          <div class="sent-slash">
+            <span class="slash-en">Those / who were resistant / many times found few opportunities / to advance their careers / and in many cases were ultimately let go / through early retirement / for failure to stay relevant / and update their skills.</span>
+            <span class="slash-ko">그들은 / 저항적이었던 / 여러 번 거의 기회를 찾지 못했다 / 자신의 경력을 발전시킬 / 그리고 많은 경우 결국 해고되었다 / 조기 은퇴를 통해 / 관련성을 유지하지 못한 것 때문에 / 그리고 자신의 기술을 업데이트하지 못한 것 때문에.</span>
+          </div>
+          <ul class="grammar-list">
+            <li>◆ those who + 과거 be동사: <em>Those who were resistant</em> = "저항적이었던 사람들"</li>
+            <li>★ 【(C) 어법 핵심】 to부정사의 형용사적 용법: <em>opportunities to advance their careers</em> = "경력을 발전시킬 기회" — 명사 opportunities를 수식하는 to부정사가 정답. advance(동사원형 단독)는 오답</li>
+            <li>◆ few + 복수명사: "거의 없는 ~" (부정의 의미) — <em>found few opportunities</em></li>
+            <li>◆ be let go: "해고되다" (수동태 관용 표현) ▶ <em>were ultimately let go through early retirement</em></li>
+            <li>◆ failure to + 동사원형: "~하지 못한 것" ▶ <em>failure to stay relevant and (to) update their skills</em> — to부정사 두 개가 and로 병렬 (두 번째 to 생략)</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Tab 3: 핵심단어 -->
+      <div class="tab-content" id="p6t3">
+        <ul class="vocab-list">
+          <li class="vocab-item"><span class="vocab-word">relevance</span><span class="vocab-meaning">관련성, 적합성, 중요성</span><span class="vocab-pos">n.</span><span class="vocab-deriv">relevant (adj.) 관련 있는</span></li>
+          <li class="vocab-item"><span class="vocab-word">fast track</span><span class="vocab-meaning">출세 가도, 고속 승진 코스</span><span class="vocab-pos">n.</span><span class="vocab-deriv">on the fast track: 출세 가도에 있는</span></li>
+          <li class="vocab-item"><span class="vocab-word">firm</span><span class="vocab-meaning">회사, 기업</span><span class="vocab-pos">n.</span><span class="vocab-deriv">= company, corporation</span></li>
+          <li class="vocab-item"><span class="vocab-word">worse yet</span><span class="vocab-meaning">더욱 나쁜 것은, 설상가상으로</span><span class="vocab-pos">phr.</span><span class="vocab-deriv">= even worse</span></li>
+          <li class="vocab-item"><span class="vocab-word">plateau</span><span class="vocab-meaning">정체기, 고원</span><span class="vocab-pos">n.</span><span class="vocab-deriv">hit a plateau: 정체기에 들다</span></li>
+          <li class="vocab-item"><span class="vocab-word">assume</span><span class="vocab-meaning">가정하다, 추측하다, 떠맡다</span><span class="vocab-pos">v.</span><span class="vocab-deriv">assumption (n.) 가정</span></li>
+          <li class="vocab-item"><span class="vocab-word">ambitious</span><span class="vocab-meaning">야심찬, 야망 있는</span><span class="vocab-pos">adj.</span><span class="vocab-deriv">ambition (n.) 야망</span></li>
+          <li class="vocab-item"><span class="vocab-word">more often than not</span><span class="vocab-meaning">대개, 십중팔구</span><span class="vocab-pos">phr.</span><span class="vocab-deriv">= usually, most of the time</span></li>
+          <li class="vocab-item"><span class="vocab-word">victim</span><span class="vocab-meaning">희생자, 피해자</span><span class="vocab-pos">n.</span><span class="vocab-deriv">victimize (v.) 희생시키다</span></li>
+          <li class="vocab-item"><span class="vocab-word">embrace</span><span class="vocab-meaning">받아들이다, 포옹하다</span><span class="vocab-pos">v.</span><span class="vocab-deriv">= accept, welcome</span></li>
+          <li class="vocab-item"><span class="vocab-word">advance</span><span class="vocab-meaning">(n.) 발전 / (v.) 발전시키다</span><span class="vocab-pos">n./v.</span><span class="vocab-deriv">advancement (n.) 진보</span></li>
+          <li class="vocab-item"><span class="vocab-word">executive</span><span class="vocab-meaning">경영의, 간부의 / 경영진</span><span class="vocab-pos">adj./n.</span><span class="vocab-deriv">execute (v.) 실행하다</span></li>
+          <li class="vocab-item"><span class="vocab-word">expose</span><span class="vocab-meaning">노출시키다, 드러내다</span><span class="vocab-pos">v.</span><span class="vocab-deriv">exposure (n.) 노출</span></li>
+          <li class="vocab-item"><span class="vocab-word">integrate</span><span class="vocab-meaning">통합하다, 융합시키다</span><span class="vocab-pos">v.</span><span class="vocab-deriv">integration (n.) 통합</span></li>
+          <li class="vocab-item"><span class="vocab-word">excel</span><span class="vocab-meaning">뛰어나다, 탁월하다</span><span class="vocab-pos">v.</span><span class="vocab-deriv">excellent (adj.) 훌륭한</span></li>
+        </ul>
+      </div>
+
+      <!-- Tab 4: 전문해석 -->
+      <div class="tab-content" id="p6t4">
+        <div class="translation">
+          성장하고 발전하지 못하는 브랜드는 그 관련성을 잃는다. 한때 여러분의 회사에서 출세 가도에 있었지만 이제 회사에 더 이상 있지 않거나, 더 심한 경우 자신의 경력에서 정체기에 든 것처럼 보이는, 여러분이 알던 그 사람에 대해 생각해 보라. 그 사람이 야심찬 이직을 하지 않았다고 가정하면, 십중팔구 이 개인은 자기 업계에서 관련성을 유지하고 발전을 받아들이는 데 실패한 희생자이다. 그 기술에 노출된 경영진 리더십의 첫 번째 물결에게 개인용 컴퓨터 기술이 미쳤던 영향에 대해 생각해 보라. 그 기술을 받아들였던 사람들은 그것을 자신의 업무 방식에 통합할 수 있었고 뛰어날 수 있었다. 저항적이었던 사람들은 자신의 경력을 발전시킬 기회를 거의 찾지 못했으며, 많은 경우 관련성을 유지하지 못하고 자신의 기술을 업데이트하지 못한 것 때문에 결국 조기 은퇴를 통해 해고되었다.
+        </div>
+      </div>
+
+      <!-- Tab 5: 주제·요지 -->
+      <div class="tab-content" id="p6t5">
+        <div class="topic-section">
+          <div class="topic-label">주제</div>
+          <div class="topic-content">브랜드와 개인이 관련성을 유지하기 위한 변화 수용과 지속적 성장의 필요성</div>
+        </div>
+        <div class="topic-section">
+          <div class="topic-label">요지</div>
+          <div class="topic-content">브랜드든 개인이든 업계의 변화와 발전을 받아들이고 자신의 기술을 계속 업데이트하지 않으면 관련성을 잃고 도태되므로, 변화를 적극적으로 수용하고 끊임없이 성장해야 한다.</div>
+        </div>
+        <div class="topic-section">
+          <div class="topic-label">구조 흐름</div>
+          <div class="structure-flow">
+            <div class="struct-step"><strong>① 도입 (원론):</strong> 성장하고 발전하지 못하는 브랜드는 관련성을 잃는다</div>
+            <div class="struct-step"><strong>② 예시 1 (개인 경력):</strong> 정체기에 든 동료 — 업계의 발전을 받아들이지 못한 희생자</div>
+            <div class="struct-step"><strong>③ 예시 2 (PC 기술):</strong> 기술을 수용한 경영진 vs. 저항한 경영진의 극명한 대비</div>
+            <div class="struct-step"><strong>④ 결론 (대비 강화):</strong> 저항한 사람들은 조기 은퇴로 해고됨 — 관련성 유지와 기술 업데이트의 필요성</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tab 6: 변형문제 -->
+      <div class="tab-content" id="p6t6">
+        <!-- Q1: 주제추론 -->
+        <div class="quiz-block" id="p6q1">
+          <span class="quiz-num">문제 1. 주제 추론</span>
+          <div class="quiz-question">윗글의 주제로 가장 적절한 것은?</div>
+          <ul class="quiz-options">
+            <li class="quiz-option" onclick="checkAns('p6q1',this,false)"><span class="quiz-option-num">①</span>the advantages of early retirement programs in corporations</li>
+            <li class="quiz-option" onclick="checkAns('p6q1',this,false)"><span class="quiz-option-num">②</span>the importance of maintaining work-life balance in careers</li>
+            <li class="quiz-option" onclick="checkAns('p6q1',this,true)"><span class="quiz-option-num">③</span>the necessity of embracing change and continuous growth to stay relevant</li>
+            <li class="quiz-option" onclick="checkAns('p6q1',this,false)"><span class="quiz-option-num">④</span>the negative impact of technology on traditional business practices</li>
+            <li class="quiz-option" onclick="checkAns('p6q1',this,false)"><span class="quiz-option-num">⑤</span>the role of ambitious career moves in achieving promotion</li>
+          </ul>
+          <div class="quiz-feedback" id="fb-p6q1"></div>
+          <button class="quiz-reset" onclick="resetQuiz('p6q1')">다시 풀기</button>
+        </div>
+
+        <!-- Q2: 빈칸추론 -->
+        <div class="quiz-block" id="p6q2">
+          <span class="quiz-num">문제 2. 빈칸 추론</span>
+          <div class="quiz-question">다음 빈칸에 들어갈 말로 가장 적절한 것은?</div>
+          <div class="quiz-passage">This individual is a victim of having failed to stay relevant and <u>_____________</u> the advances in his or her industry.</div>
+          <ul class="quiz-options">
+            <li class="quiz-option" onclick="checkAns('p6q2',this,false)"><span class="quiz-option-num">①</span>resist</li>
+            <li class="quiz-option" onclick="checkAns('p6q2',this,false)"><span class="quiz-option-num">②</span>ignore</li>
+            <li class="quiz-option" onclick="checkAns('p6q2',this,true)"><span class="quiz-option-num">③</span>embrace</li>
+            <li class="quiz-option" onclick="checkAns('p6q2',this,false)"><span class="quiz-option-num">④</span>criticize</li>
+            <li class="quiz-option" onclick="checkAns('p6q2',this,false)"><span class="quiz-option-num">⑤</span>postpone</li>
+          </ul>
+          <div class="quiz-feedback" id="fb-p6q2"></div>
+          <button class="quiz-reset" onclick="resetQuiz('p6q2')">다시 풀기</button>
+        </div>
+
+        <!-- Q3: 어법 (원본 3지선다) -->
+        <div class="quiz-block" id="p6q3">
+          <span class="quiz-num">문제 3. 어법 (A), (B), (C) 정답 조합</span>
+          <div class="quiz-question">(A), (B), (C)의 각 네모 안에서 어법에 맞는 표현으로 가장 적절한 것은?</div>
+          <div class="quiz-passage">Think about the person you knew who ... <strong>(A) [ appear / appears ]</strong> to have hit a plateau in his or her career. ... Think about the impact personal computing technology had on the first wave of executive leadership <strong>(B) [ exposing / exposed ]</strong> to the technology. ... Those who were resistant many times found few opportunities <strong>(C) [ advance / to advance ]</strong> their careers ...</div>
+          <ul class="quiz-options">
+            <li class="quiz-option" onclick="checkAns('p6q3',this,false)"><span class="quiz-option-num">①</span>appear &nbsp;—&nbsp; exposing &nbsp;—&nbsp; advance</li>
+            <li class="quiz-option" onclick="checkAns('p6q3',this,false)"><span class="quiz-option-num">②</span>appear &nbsp;—&nbsp; exposed &nbsp;—&nbsp; to advance</li>
+            <li class="quiz-option" onclick="checkAns('p6q3',this,false)"><span class="quiz-option-num">③</span>appears &nbsp;—&nbsp; exposing &nbsp;—&nbsp; advance</li>
+            <li class="quiz-option" onclick="checkAns('p6q3',this,true)"><span class="quiz-option-num">④</span>appears &nbsp;—&nbsp; exposed &nbsp;—&nbsp; to advance</li>
+            <li class="quiz-option" onclick="checkAns('p6q3',this,false)"><span class="quiz-option-num">⑤</span>appears &nbsp;—&nbsp; exposed &nbsp;—&nbsp; advance</li>
+          </ul>
+          <div class="quiz-feedback" id="fb-p6q3"></div>
+          <button class="quiz-reset" onclick="resetQuiz('p6q3')">다시 풀기</button>
+        </div>
+
+        <!-- Q4: 내용불일치 -->
+        <div class="quiz-block" id="p6q4">
+          <span class="quiz-num">문제 4. 내용 불일치</span>
+          <div class="quiz-question">윗글의 내용과 일치하지 <strong>않는</strong> 것은?</div>
+          <ul class="quiz-options">
+            <li class="quiz-option" onclick="checkAns('p6q4',this,false)"><span class="quiz-option-num">①</span>성장하고 발전하지 못하는 브랜드는 관련성을 잃는다.</li>
+            <li class="quiz-option" onclick="checkAns('p6q4',this,false)"><span class="quiz-option-num">②</span>정체기에 든 개인은 업계의 발전을 받아들이는 데 실패한 희생자이다.</li>
+            <li class="quiz-option" onclick="checkAns('p6q4',this,true)"><span class="quiz-option-num">③</span>개인용 컴퓨터 기술에 저항한 경영진이 결국 더 높은 성과를 냈다.</li>
+            <li class="quiz-option" onclick="checkAns('p6q4',this,false)"><span class="quiz-option-num">④</span>기술을 받아들인 사람들은 업무 방식에 통합하여 뛰어날 수 있었다.</li>
+            <li class="quiz-option" onclick="checkAns('p6q4',this,false)"><span class="quiz-option-num">⑤</span>기술 업데이트에 실패한 사람들은 조기 은퇴를 통해 해고되는 경우가 많았다.</li>
+          </ul>
+          <div class="quiz-feedback" id="fb-p6q4"></div>
+          <button class="quiz-reset" onclick="resetQuiz('p6q4')">다시 풀기</button>
+        </div>
+
+        <!-- Essay 1 -->
+        <div class="essay-block">
+          <span class="essay-label">서술형 1</span>
+          <div class="essay-condition">[조건] 본문에서 찾아 빈칸을 완성하시오. 각 빈칸에는 한 단어씩 들어갑니다.</div>
+          <div class="essay-question">다음은 윗글의 요약문이다. 빈칸 (A)와 (B)에 들어갈 말을 본문에서 찾아 쓰시오.<br><br>→ Both brands and individuals must (A) <u>__________</u> the advances in their industry and continually update their skills in order to stay (B) <u>__________</u>.</div>
+          <textarea class="essay-input" placeholder="(A) :&#10;(B) :"></textarea>
+          <button class="essay-toggle-btn" onclick="toggleAns(this)">모범답안 보기</button>
+          <div class="essay-answer">
+            <span class="essay-answer-label">▶ 모범답안</span>
+            (A) embrace &nbsp; / &nbsp; (B) relevant
+          </div>
+        </div>
+
+        <!-- Essay 2 -->
+        <div class="essay-block">
+          <span class="essay-label">서술형 2</span>
+          <div class="essay-condition">[조건] 본문의 개인용 컴퓨터 기술 예시를 활용하여 완전한 영어 문장으로 답하시오. (40단어 내외)</div>
+          <div class="essay-question">Using the example of personal computing technology in the passage, explain the different outcomes for executives who embraced technology versus those who resisted it.</div>
+          <textarea class="essay-input" placeholder="Write your answer here..."></textarea>
+          <button class="essay-toggle-btn" onclick="toggleAns(this)">모범답안 보기</button>
+          <div class="essay-answer">
+            <span class="essay-answer-label">▶ 모범답안</span>
+            Executives who embraced personal computing technology integrated it into their work styles and excelled, while those who resisted found few opportunities to advance their careers and were often forced into early retirement. (about 33 words)
+          </div>
+        </div>
+      </div>
+    </section>
+
+    </main>
+  </div>
+
+  <footer class="footer">
+    <div class="footer-brand">에듀케레 영수학원 · 바른학습관</div>
+    <div class="footer-info">경남 양산시 물금읍 · 055.363.8010</div>
+    <div class="footer-copy">© 에듀케레 영수학원의 분석지 — 범어고 외부지문 · 이쌤의 영어 분석지</div>
+  </footer>
+
+  <script>
+    // ============ 지문 전환 ============
+    function showPassage(n) {
+      var passages = document.querySelectorAll('.passage');
+      for (var i = 0; i < passages.length; i++) {
+        passages[i].classList.remove('active');
+      }
+      var target = document.getElementById('p' + n);
+      if (target) target.classList.add('active');
+
+      var items = document.querySelectorAll('.passage-item');
+      for (var j = 0; j < items.length; j++) {
+        items[j].classList.remove('active');
+      }
+      if (items[n - 1]) items[n - 1].classList.add('active');
+
+      // 모바일: 지문 선택 후 사이드바 닫기
+      var sidebar = document.querySelector('.sidebar');
+      if (sidebar) sidebar.classList.remove('show');
+
+      // 스크롤 상단으로
+      window.scrollTo(0, 0);
+    }
+
+    // ============ 탭 전환 ============
+    function showTab(p, t) {
+      var passage = document.getElementById('p' + p);
+      if (!passage) return;
+
+      var tabBtns = passage.querySelectorAll('.tab-btn');
+      for (var i = 0; i < tabBtns.length; i++) {
+        tabBtns[i].classList.remove('active');
+      }
+      if (tabBtns[t - 1]) tabBtns[t - 1].classList.add('active');
+
+      var tabContents = passage.querySelectorAll('.tab-content');
+      for (var j = 0; j < tabContents.length; j++) {
+        tabContents[j].classList.remove('active');
+      }
+      var target = document.getElementById('p' + p + 't' + t);
+      if (target) target.classList.add('active');
+    }
+
+    // ============ 퀴즈 정답 체크 ============
+    function checkAns(qId, elem, isCorrect) {
+      var quiz = document.getElementById(qId);
+      if (!quiz) return;
+
+      // 이미 답을 선택한 경우 무시
+      if (quiz.classList.contains('answered')) return;
+      quiz.classList.add('answered');
+
+      var options = quiz.querySelectorAll('.quiz-option');
+      var feedback = document.getElementById('fb-' + qId);
+
+      if (isCorrect) {
+        elem.classList.add('correct');
+        if (feedback) {
+          feedback.className = 'quiz-feedback show correct';
+          feedback.innerHTML = '✓ 정답입니다! 훌륭합니다.';
+        }
+      } else {
+        elem.classList.add('wrong');
+        // 정답 표시 (초록)
+        for (var i = 0; i < options.length; i++) {
+          if (options[i].getAttribute('onclick').indexOf('true') !== -1) {
+            options[i].classList.add('correct');
+          }
+        }
+        if (feedback) {
+          feedback.className = 'quiz-feedback show wrong';
+          feedback.innerHTML = '✗ 오답입니다. 초록색으로 표시된 보기가 정답입니다.';
+        }
+      }
+
+      // 모든 선택지 비활성화
+      for (var k = 0; k < options.length; k++) {
+        options[k].classList.add('disabled');
+      }
+    }
+
+    // ============ 퀴즈 리셋 ============
+    function resetQuiz(qId) {
+      var quiz = document.getElementById(qId);
+      if (!quiz) return;
+
+      quiz.classList.remove('answered');
+      var options = quiz.querySelectorAll('.quiz-option');
+      for (var i = 0; i < options.length; i++) {
+        options[i].classList.remove('correct', 'wrong', 'disabled');
+      }
+      var feedback = document.getElementById('fb-' + qId);
+      if (feedback) {
+        feedback.className = 'quiz-feedback';
+        feedback.innerHTML = '';
+      }
+    }
+
+    // ============ 서술형 모범답안 토글 ============
+    function toggleAns(btn) {
+      var answer = btn.nextElementSibling;
+      if (!answer) return;
+      if (answer.classList.contains('show')) {
+        answer.classList.remove('show');
+        btn.innerHTML = '모범답안 보기';
+      } else {
+        answer.classList.add('show');
+        btn.innerHTML = '모범답안 닫기';
+      }
+    }
+
+    // ============ 모바일 사이드바 토글 ============
+    function toggleSidebar() {
+      var sidebar = document.querySelector('.sidebar');
+      if (sidebar) sidebar.classList.toggle('show');
+    }
+  </script>
+</body>
+</html>
